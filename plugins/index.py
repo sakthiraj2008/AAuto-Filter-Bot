@@ -6,7 +6,7 @@ from info import LOG_CHANNEL, ADMINS
 from database.ia_filterdb import save_file
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from utils import temp
-#from pyrogram.types import ForceReply
+from pyrogram.types import ForceReply
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -53,7 +53,7 @@ async def send_for_index(bot, message):
         f"Last Message ID: <code>{last_msg_id}</code>\n\n"
         f"Reply with <b>yes</b> or <b>no</b> to confirm.",
         parse_mode=enums.ParseMode.HTML,
-        #reply_markup=ForceReply(selective=True)  # Enable ForceReply
+        reply_markup=ForceReply(selective=True)  # Enable ForceReply
     )
 
     # Wait for the user's reply
