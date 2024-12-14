@@ -21,7 +21,7 @@ class temp(object):
     U_NAME = None
     B_NAME = None
     SETTINGS = {}
-    CURRENT = 0 #int(os.environ.get("SKIP", 2))
+    CURRENT = int(os.environ.get("SKIP", 1))
     VERIFICATIONS = {}
     FILES = {}
     USERS_CANCEL = False
