@@ -17,13 +17,13 @@ class script(object):
 ★ Country: India 🇮🇳
 ★ Nationality: Tamizhan 🏹 🐯 🎏</b>"""
 
-    STATUS_TXT = """🗂 Total Files: <code>{}</code>
+    STATUS_TXT = """<b>🗂 Total Files: <code>{}</code>
 👤 Total Users: <code>{}</code>
 👥 Total Chats: <code>{}</code>
 🤑 Premium Users: <code>{}</code>
 ✨ Used Storage: <code>{}</code>
 🗳 Free Storage: <code>{}</code>
-🚀 Bot Uptime: <code>{}</code>"""
+🚀 Bot Uptime: <code>{}</code></b>"""
 
     NEW_GROUP_TXT = """#NewGroup
 Title - {}
