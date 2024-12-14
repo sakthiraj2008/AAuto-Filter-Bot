@@ -54,7 +54,7 @@ if len(LOG_CHANNEL) == 0:
     exit()
 else:
     LOG_CHANNEL = int(LOG_CHANNEL)
-MOVIE_UPDATE_CHANNEL = int(environ.get('MOVIE_UPDATE_CHANNEL', '-1001821439025'))
+MOVIE_UPDATE_CHANNEL = [int(movie_update_channel) if movie_update_channel.startswith("-") else movie_update_channel for movie_update_channel in environ.get('MOVIE_UPDATE_CHANNEL', '-1002244141688 -1001715180239 -1001589399161 -1001139111796 -1002097728232').split()]
 
 # support group
 SUPPORT_GROUP = environ.get('SUPPORT_GROUP', '-1001895961046')
