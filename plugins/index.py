@@ -6,7 +6,7 @@ from info import LOG_CHANNEL, ADMINS
 from database.ia_filterdb import save_file
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from utils import temp
-from pyrogram.types import ForceReply
+#from pyrogram.types import ForceReply
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -51,9 +51,9 @@ async def send_for_index(bot, message):
         f"Do you want to index this channel/group?\n\n"
         f"Chat ID/Username: <code>{chat_id}</code>\n"
         f"Last Message ID: <code>{last_msg_id}</code>\n\n"
-        f"Reply with **yes** or **no** to confirm.",
+        f"Reply with <b>yes</b> or <b>no</b> to confirm.",
         parse_mode=enums.ParseMode.HTML,
-        reply_markup=ForceReply(selective=True)  # Enable ForceReply
+        #reply_markup=ForceReply(selective=True)  # Enable ForceReply
     )
 
     # Wait for the user's reply
@@ -61,10 +61,10 @@ async def send_for_index(bot, message):
     async def handle_confirmation(bot, reply_message):
         if reply_message.reply_to_message.message_id == msg.message_id:
             user_response = reply_message.text.lower()
-            if user_response in ["yes", "1", "true"]:
+            if user_response in ["!yes", "!1", "!true"]:
                 await message.reply("✅ Indexing started!")
                 await index_files_to_db(last_msg_id, chat_id, msg, bot)
-            elif user_response in ["no", "0", "false"]:
+            elif user_response in ["!no", "!0", "!false"]:
                 await message.reply("❌ Indexing canceled.")
             else:
                 await message.reply("❌ Invalid response. Please reply with 'yes' or 'no'.")
