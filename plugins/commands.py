@@ -15,10 +15,6 @@ from utils import get_settings, get_size, is_subscribed, is_check_admin, get_sho
 
 @Client.on_message(filters.command("start") & filters.incoming)
 async def start(client, message):
-    try:
-        await message.react(emoji=random.choice(REACTIONS), big=True)
-    except:
-        await message.react(emoji="⚡️", big=True)
     if message.chat.type in [enums.ChatType.GROUP, enums.ChatType.SUPERGROUP]:
         if not await db.get_chat(message.chat.id):
             total = await client.get_chat_members_count(message.chat.id)
@@ -41,6 +37,13 @@ async def start(client, message):
     verify_status = await get_verify_status(message.from_user.id)
     if verify_status['is_verified'] and datetime.datetime.now() > verify_status['expire_time']:
         await update_verify_status(message.from_user.id, is_verified=False)
+
+    if len(message.command) == 2 and message.command[1].startswith('getfile'):
+        searches = message.command[1].split("-", 1)[1] 
+        search = searches.replace('-',' ')
+        message.text = search 
+        await auto_filter(client, message) 
+        return
     
     if (len(message.command) != 2) or (len(message.command) == 2 and message.command[1] == 'start'):
         buttons = [[
