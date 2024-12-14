@@ -150,7 +150,7 @@ async def next_page(bot, query):
     if settings['links']:
         btn = []
         for file_num, file in enumerate(files, start=offset+1):
-            files_link += f"""<b>\n\n{file_num}. <a href=https://t.me/{temp.U_NAME}?start=file_{query.message.chat.id}_{file.file_id}>[{get_size(file.file_size)}] {file.file_name}</a></b>"""
+            files_link += f"""<b>\n\n{file_num}. <a href=https://t.me/{temp.U_NAME}?start=file_{query.message.chat.id}_{file.file_id}>[{get_size(file.file_size)}] - {file.file_name}</a></b>"""
     else:
         btn = [[
             InlineKeyboardButton(text=f"📂 {get_size(file.file_size)} {file.file_name}", callback_data=f'file#{file.file_id}')
@@ -252,7 +252,7 @@ async def filter_languages_cb_handler(client: Client, query: CallbackQuery):
     if settings['links']:
         btn = []
         for file_num, file in enumerate(files, start=1):
-            files_link += f"""<b>\n\n{file_num}. <a href=https://t.me/{temp.U_NAME}?start=file_{query.message.chat.id}_{file.file_id}>[{get_size(file.file_size)}] {file.file_name}</a></b>"""
+            files_link += f"""<b>\n\n{file_num}. <a href=https://t.me/{temp.U_NAME}?start=file_{query.message.chat.id}_{file.file_id}>[{get_size(file.file_size)}] - {file.file_name}</a></b>"""
     else:
         btn = [[
             InlineKeyboardButton(text=f"📂 {get_size(file.file_size)} {file.file_name}", callback_data=f'file#{file.file_id}')
@@ -312,7 +312,7 @@ async def lang_next_page(bot, query):
     if settings['links']:
         btn = []
         for file_num, file in enumerate(files, start=l_offset+1):
-            files_link += f"""<b>\n\n{file_num}. <a href=https://t.me/{temp.U_NAME}?start=file_{query.message.chat.id}_{file.file_id}>[{get_size(file.file_size)}] {file.file_name}</a></b>"""
+            files_link += f"""<b>\n\n{file_num}. <a href=https://t.me/{temp.U_NAME}?start=file_{query.message.chat.id}_{file.file_id}>[{get_size(file.file_size)}] - {file.file_name}</a></b>"""
     else:
         btn = [[
             InlineKeyboardButton(text=f"✨ {get_size(file.file_size)} ⚡️ {file.file_name}", callback_data=f'file#{file.file_id}')
@@ -381,7 +381,7 @@ async def quality_search(client: Client, query: CallbackQuery):
     if settings['links']:
         btn = []
         for file_num, file in enumerate(files, start=1):
-            files_link += f"""<b>\n\n{file_num}. <a href=https://t.me/{temp.U_NAME}?start=file_{query.message.chat.id}_{file.file_id}>[{get_size(file.file_size)}] {file.file_name}</a></b>"""
+            files_link += f"""<b>\n\n{file_num}. <a href=https://t.me/{temp.U_NAME}?start=file_{query.message.chat.id}_{file.file_id}>[{get_size(file.file_size)}] - {file.file_name}</a></b>"""
     else:
         btn = [[
             InlineKeyboardButton(text=f"📂 {get_size(file.file_size)} {file.file_name}", callback_data=f'file#{file.file_id}')
@@ -434,7 +434,7 @@ async def quality_next_page(bot, query):
     if settings['links']:
         btn = []
         for file_num, file in enumerate(files, start=l_offset+1):
-            files_link += f"""<b>\n\n{file_num}. <a href=https://t.me/{temp.U_NAME}?start=file_{query.message.chat.id}_{file.file_id}>[{get_size(file.file_size)}] {file.file_name}</a></b>"""
+            files_link += f"""<b>\n\n{file_num}. <a href=https://t.me/{temp.U_NAME}?start=file_{query.message.chat.id}_{file.file_id}>[{get_size(file.file_size)}] - {file.file_name}</a></b>"""
     else:
         btn = [[
             InlineKeyboardButton(text=f"✨ {get_size(file.file_size)} ⚡️ {file.file_name}", callback_data=f'file#{file.file_id}')
