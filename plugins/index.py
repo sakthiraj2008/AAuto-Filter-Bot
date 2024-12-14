@@ -6,7 +6,6 @@ from info import LOG_CHANNEL, ADMINS
 from database.ia_filterdb import save_file
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from utils import temp
-from pyrogram.types import ForceReply
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -23,11 +22,11 @@ async def send_for_index(bot, message):
         last_msg_id = int(match.group(5))
         if chat_id.isnumeric():
             chat_id = int(("-100" + chat_id))
-    elif message.forward_from_chat.type == enums.ChatType.CHANNEL:
+    elif message.forward_from_chat and message.forward_from_chat.type == enums.ChatType.CHANNEL:
         last_msg_id = message.forward_from_message_id
         chat_id = message.forward_from_chat.username or message.forward_from_chat.id
     else:
-        return
+        return await message.reply("❌ Invalid forwarded message or link.")
     
     try:
         await bot.get_chat(chat_id)
@@ -46,30 +45,10 @@ async def send_for_index(bot, message):
     if k.empty:
         return await message.reply("❌ This may be a group, and I am not an admin of the group.")
     
-    # Send a confirmation request with ForceReply
-    msg = await message.reply(
-        f"Do you want to index this channel/group?\n\n"
-        f"Chat ID/Username: <code>{chat_id}</code>\n"
-        f"Last Message ID: <code>{last_msg_id}</code>\n\n"
-        f"Reply with <b>yes</b> or <b>no</b> to confirm.",
-        parse_mode=enums.ParseMode.HTML,
-        reply_markup=ForceReply(selective=True)  # Enable ForceReply
-    )
-    
-@Client.on_message(filters.reply & filters.text & filters.private)
-async def handle_confirmation(bot, reply_message):
-    # Check if the reply is tied to the original message
-    if reply_message.reply_to_message.message_id == msg.message_id:
-        user_response = reply_message.text.strip().lower()  # Trim spaces and convert to lowercase
-        
-        if user_response in ["yes", "1", "true"]:
-            await message.reply("✅ Indexing started!")
-            await index_files_to_db(last_msg_id, chat_id, msg, bot)
-        elif user_response in ["no", "0", "false"]:
-            await message.reply("❌ Indexing canceled.")
-        else:
-            await message.reply("❌ Invalid response. Please reply with 'yes' or 'no'.")
-            
+    # Start indexing directly
+    msg = await message.reply("✅ Indexing Starting..!")
+    await index_files_to_db(last_msg_id, chat_id, msg, bot)
+
 @Client.on_message(filters.command('setskip') & filters.user(ADMINS))
 async def set_skip_number(bot, message):
     if len(message.command) == 2:
@@ -79,7 +58,6 @@ async def set_skip_number(bot, message):
         temp.CURRENT = int(skip)
     else:
         await message.reply("Give Me A Skip Number")
-
 
 async def index_files_to_db(lst_msg_id, chat, msg, bot):
     total_files = 0
@@ -94,17 +72,23 @@ async def index_files_to_db(lst_msg_id, chat, msg, bot):
             temp.CANCEL = False
             async for message in bot.iter_messages(chat, lst_msg_id, temp.CURRENT):
                 if temp.CANCEL:
-                    await msg.edit(f"Successfully Cancelled!!\n\nSaved <code>{total_files}</code> files to dataBase!\nDuplicate Files Skipped: <code>{duplicate}</code>\nDeleted Messages Skipped: <code>{deleted}</code>\nNon-Media messages skipped: <code>{no_media + unsupported}</code>(Unsupported Media - `{unsupported}` )\nErrors Occurred: <code>{errors}</code>")
+                    await msg.edit(f"Successfully Cancelled!!\n\nSaved <code>{total_files}</code> files to database!\nDuplicate Files Skipped: <code>{duplicate}</code>\nDeleted Messages Skipped: <code>{deleted}</code>\nNon-Media messages skipped: <code>{no_media + unsupported}</code>(Unsupported Media - `{unsupported}` )\nErrors Occurred: <code>{errors}</code>")
                     break
                 current += 1
                 if current % 100 == 0:
                     can = [[InlineKeyboardButton('Cancel', callback_data='index_cancel')]]
                     reply = InlineKeyboardMarkup(can)
                     try:
-                        await msg.edit_text(text=f"Total Messages Fetched: <code>{current}</code>\nTotal Messages Saved: <code>{total_files}</code>\nDuplicate Files Skipped: <code>{duplicate}</code>\nDeleted Messages Skipped: <code>{deleted}</code>\nNon-Media messages skipped: <code>{no_media + unsupported}</code>(Unsupported Media - `{unsupported}` )\nErrors Occurred: <code>{errors}</code>", reply_markup=reply)       
+                        await msg.edit_text(
+                            text=f"Total Messages Fetched: <code>{current}</code>\nTotal Messages Saved: <code>{total_files}</code>\nDuplicate Files Skipped: <code>{duplicate}</code>\nDeleted Messages Skipped: <code>{deleted}</code>\nNon-Media messages skipped: <code>{no_media + unsupported}</code>(Unsupported Media - `{unsupported}` )\nErrors Occurred: <code>{errors}</code>",
+                            reply_markup=reply
+                        )       
                     except FloodWait as t:
                         await asyncio.sleep(t.value)
-                        await msg.edit_text(text=f"Total Messages Fetched: <code>{current}</code>\nTotal Messages Saved: <code>{total_files}</code>\nDuplicate Files Skipped: <code>{duplicate}</code>\nDeleted Messages Skipped: <code>{deleted}</code>\nNon-Media messages skipped: <code>{no_media + unsupported}</code>(Unsupported Media - `{unsupported}` )\nErrors Occurred: <code>{errors}</code>", reply_markup=reply)                          
+                        await msg.edit_text(
+                            text=f"Total Messages Fetched: <code>{current}</code>\nTotal Messages Saved: <code>{total_files}</code>\nDuplicate Files Skipped: <code>{duplicate}</code>\nDeleted Messages Skipped: <code>{deleted}</code>\nNon-Media messages skipped: <code>{no_media + unsupported}</code>(Unsupported Media - `{unsupported}` )\nErrors Occurred: <code>{errors}</code>",
+                            reply_markup=reply
+                        )                          
                 if message.empty:
                     deleted += 1
                     continue
@@ -129,7 +113,13 @@ async def index_files_to_db(lst_msg_id, chat, msg, bot):
                     errors += 1       
         except Exception as e:
             logger.exception(e)
-            await msg.edit(f'Error: {e}')
+            await msg.edit(f"❌ Error: {e}")
         else:
-            await msg.edit(f'Succesfully Saved <code>{total_files}</code> To Database!\nDuplicate Files Skipped: <code>{duplicate}</code>\nDeleted Messages Skipped: <code>{deleted}</code>\nNon-Media Messages Skipped: <code>{no_media + unsupported}</code>(Unsupported Media - `{unsupported}` )\nErrors Occurred: <code>{errors}</code>')
+            await msg.edit(
+                f"✅ Successfully Saved <code>{total_files}</code> To Database!\n"
+                f"Duplicate Files Skipped: <code>{duplicate}</code>\n"
+                f"Deleted Messages Skipped: <code>{deleted}</code>\n"
+                f"Non-Media Messages Skipped: <code>{no_media + unsupported}</code>(Unsupported Media - `{unsupported}` )\n"
+                f"Errors Occurred: <code>{errors}</code>"
+                )
             
