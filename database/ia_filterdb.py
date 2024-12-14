@@ -46,7 +46,7 @@ async def save_file(media):
 
     # TODO: Find better way to get same file_id for same media to avoid duplicates
     file_id, file_ref = unpack_new_file_id(media.file_id)
-    file_name = re.sub(r"@[\w-]+|(_)", " ", str(media.file_name))
+    file_name = re.sub(r"^@\w+ - ", "", str(media.caption))
     file_caption = str(media.caption)
     for pattern, replacement in replacements:
         file_name = re.sub(pattern, replacement, file_name)
@@ -57,20 +57,22 @@ async def save_file(media):
             file_ref=file_ref,
             file_name=file_name,
             file_size=media.file_size,
-            caption=file_caption
+            mime_type=media.mime_type,
+            caption=file_caption,
+            file_type=media.mime_type.split('/')[0]
         )
     except ValidationError:
-        print(f'Saving Error - {file_name}')
+        print('Error occurred while saving file in database')
         return 'err'
     else:
         try:
             await file.commit()
         except DuplicateKeyError:      
-            print(f'Already Saved - {file_name}')
+            print(f'{getattr(media, "file_name", "NO_FILE")} is already saved in database') 
             return 'dup'
         else:
-            print(f'Saved - {file_name}')
-            return 'suc'
+            print(f'{getattr(media, "file_name", "NO_FILE")} is saved to database')
+            return 'suc
 
 async def get_search_results(query, max_results=MAX_BTN, offset=0, lang=None):
     query = str(query) # to ensure the query is string to stripe.
