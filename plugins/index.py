@@ -55,20 +55,21 @@ async def send_for_index(bot, message):
         parse_mode=enums.ParseMode.HTML,
         reply_markup=ForceReply(selective=True)  # Enable ForceReply
     )
-
-    # Wait for the user's reply
-    @Client.on_message(filters.reply & filters.text & filters.private)
-    async def handle_confirmation(bot, reply_message):
-        if reply_message.reply_to_message.message_id == msg.message_id:
-            user_response = reply_message.text.lower()
-            if user_response in ["!yes", "!1", "!true"]:
-                await message.reply("✅ Indexing started!")
-                await index_files_to_db(last_msg_id, chat_id, msg, bot)
-            elif user_response in ["!no", "!0", "!false"]:
-                await message.reply("❌ Indexing canceled.")
-            else:
-                await message.reply("❌ Invalid response. Please reply with 'yes' or 'no'.")
-
+    
+@Client.on_message(filters.reply & filters.text & filters.private)
+async def handle_confirmation(bot, reply_message):
+    # Check if the reply is tied to the original message
+    if reply_message.reply_to_message.message_id == msg.message_id:
+        user_response = reply_message.text.strip().lower()  # Trim spaces and convert to lowercase
+        
+        if user_response in ["yes", "1", "true"]:
+            await message.reply("✅ Indexing started!")
+            await index_files_to_db(last_msg_id, chat_id, msg, bot)
+        elif user_response in ["no", "0", "false"]:
+            await message.reply("❌ Indexing canceled.")
+        else:
+            await message.reply("❌ Invalid response. Please reply with 'yes' or 'no'.")
+            
 @Client.on_message(filters.command('setskip') & filters.user(ADMINS))
 async def set_skip_number(bot, message):
     if len(message.command) == 2:
