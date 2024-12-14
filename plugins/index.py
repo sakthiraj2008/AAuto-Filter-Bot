@@ -6,18 +6,19 @@ from info import LOG_CHANNEL, ADMINS
 from database.ia_filterdb import save_file
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from utils import temp
+from pyrogram.types import ForceReply
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 lock = asyncio.Lock()
 
-@Client.on_message((filters.forwarded | (filters.regex("(https://)?(t\.me/|telegram\.me/|telegram\.dog/)(c/)?(\d+|[a-zA-Z_0-9]+)/(\d+)$")) & filters.text ) & filters.private & filters.incoming & filters.user(ADMINS))
+@Client.on_message((filters.forwarded | (filters.regex("(https://)?(t\.me/|telegram\.me/|telegram\.dog/)(c/)?(\d+|[a-zA-Z_0-9]+)/(\d+)$")) & filters.text) & filters.private & filters.incoming & filters.user(ADMINS))
 async def send_for_index(bot, message):
     if message.text:
         regex = re.compile("(https://)?(t\.me/|telegram\.me/|telegram\.dog/)(c/)?(\d+|[a-zA-Z_0-9]+)/(\d+)$")
         match = regex.match(message.text)
         if not match: 
-            return await message.reply('Invalid link')
+            return await message.reply("❌ Invalid link.")
         chat_id = match.group(4)
         last_msg_id = int(match.group(5))
         if chat_id.isnumeric():
@@ -31,30 +32,31 @@ async def send_for_index(bot, message):
     try:
         await bot.get_chat(chat_id)
     except ChannelInvalid:
-        return await message.reply('This may be a private channel / group. Make me an admin over there to index the files.')
+        return await message.reply("❌ This may be a private channel/group. Make me an admin over there to index the files.")
     except (UsernameInvalid, UsernameNotModified):
-        return await message.reply('Invalid Link specified.')
+        return await message.reply("❌ Invalid Link specified.")
     except Exception as e:
-        return await message.reply(f'Errors - {e}')
+        return await message.reply(f"❌ Error: {e}")
     
     try:
         k = await bot.get_messages(chat_id, last_msg_id)
     except:
-        return await message.reply('Make Sure That I am an Admin in the Channel, if the channel is private.')
+        return await message.reply("❌ Make sure I am an admin in the channel if it is private.")
     
     if k.empty:
-        return await message.reply('This may be a group, and I am not an admin of the group.')
+        return await message.reply("❌ This may be a group, and I am not an admin of the group.")
     
-    # Send confirmation request
+    # Send a confirmation request with ForceReply
     msg = await message.reply(
         f"Do you want to index this channel/group?\n\n"
         f"Chat ID/Username: <code>{chat_id}</code>\n"
         f"Last Message ID: <code>{last_msg_id}</code>\n\n"
         f"Reply with **yes** or **no** to confirm.",
-        parse_mode=enums.ParseMode.HTML
+        parse_mode=enums.ParseMode.HTML,
+        reply_markup=ForceReply(selective=True)  # Enable ForceReply
     )
-    
-    # Wait for a response
+
+    # Wait for the user's reply
     @Client.on_message(filters.reply & filters.text & filters.private)
     async def handle_confirmation(bot, reply_message):
         if reply_message.reply_to_message.message_id == msg.message_id:
@@ -65,7 +67,7 @@ async def send_for_index(bot, message):
             elif user_response in ["no", "0", "false"]:
                 await message.reply("❌ Indexing canceled.")
             else:
-                await message.reply("Invalid response. Please reply with 'yes' or 'no'.")
+                await message.reply("❌ Invalid response. Please reply with 'yes' or 'no'.")
 
 @Client.on_message(filters.command('setskip') & filters.user(ADMINS))
 async def set_skip_number(bot, message):
