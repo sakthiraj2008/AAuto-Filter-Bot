@@ -72,7 +72,7 @@ async def save_file(media):
             return 'dup'
         else:
             print(f'{getattr(media, "file_name", "NO_FILE")} is saved to database')
-            return 'suc
+            return 'suc'
 
 async def get_search_results(query, max_results=MAX_BTN, offset=0, lang=None):
     query = str(query) # to ensure the query is string to stripe.
