@@ -5,7 +5,7 @@ import asyncio
 from pyrogram.types import InlineKeyboardButton
 from pyrogram import enums
 import pytz
-import re
+import re, os
 from datetime import datetime
 from database.users_chats_db import db
 from shortzy import Shortzy
@@ -21,6 +21,7 @@ class temp(object):
     U_NAME = None
     B_NAME = None
     SETTINGS = {}
+    CURRENT = int(os.environ.get("SKIP", 2))
     VERIFICATIONS = {}
     FILES = {}
     USERS_CANCEL = False
