@@ -52,13 +52,16 @@ async def send_for_index(bot, message):
 @Client.on_message(filters.command('setskip') & filters.user(ADMINS))
 async def set_skip_number(bot, message):
     if len(message.command) == 2:
-        try: skip = int(message.text.split(" ", 1)[1])
-        except: return await message.reply("Skip Number Should Be An Integer.")
-        await message.reply(f"Successfully Set Skip Number As {skip}")
-        temp.CURRENT = int(skip)
+        try:
+            skip = int(message.text.split(" ", 1)[1])
+        except ValueError:
+            return await message.reply("❌ Skip Number Should Be an Integer.")
+        
+        temp.CURRENT = skip  # Set skip value in temp
+        await message.reply(f"✅ Successfully Set Skip Number to {skip}")
     else:
-        await message.reply("Give Me A Skip Number")
-
+        await message.reply("❌ Provide a valid skip number.")
+        
 async def index_files_to_db(lst_msg_id, chat, msg, bot):
     total_files = 0
     duplicate = 0
