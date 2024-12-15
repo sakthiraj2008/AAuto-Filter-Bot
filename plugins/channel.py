@@ -47,29 +47,91 @@ async def send_movie_updates(bot, file_name, caption, file_id):
         channels = await db.get_movie_update_channels()
         if not channels:
             channels = MOVIE_UPDATE_CHANNEL
+
+        # Extract the year from the caption (if it exists)
         year_match = re.search(r"\b(19|20)\d{2}\b", caption)
         year = year_match.group(0) if year_match else None
+
+        # Extract the season information (if it exists)
         pattern = r"(?i)(?:s|season)0*(\d{1,2})"
         season = re.search(pattern, caption)
         if not season:
             season = re.search(pattern, file_name)
+        
+        # Remove year and season from the file name
         if year:
             file_name = file_name[:file_name.find(year) + 4]
         if season:
             season = season.group(1) if season else None
             file_name = file_name[:file_name.find(season) + 1]
+
+        # Set movie quality (if available)
         qualities = ["ORG", "org", "hdcam", "HDCAM", "HQ", "hq", "HDRip", "hdrip", 
-                     "camrip", "TRUE WEB-DL", "CAMRip", "hdtc", "predvd", "PreDVD", "DVDscr", "dvdscr",
+                     "camrip", "WEB-DL", "CAMRip", "hdtc", "predvd", "DVDscr", "dvdscr",
                      "dvdrip", "dvdscr", "HDTC", "dvdscreen", "HDTS", "hdts"]
         quality = await check_qualities(caption, qualities) or "HDRip"
+
+        # Detect language (including abbreviations)
         language = ""
-        nb_languages = ["Tamil", "Bengali", "English", "Marathi", "Hindi", "Telugu", 
-                        "Malayalam", "Kannada", "Punjabi", "Gujrati", "Korean", "Japanese", 
-                        "Bhojpuri", "Chinese", "Dual", "Multi"]
-        for lang in nb_languages:
-            if lang.lower() in caption.lower():
-                language += f"{lang}, "
-        language = language.strip(", ") or "Not Idea"
+        nb_languages = {
+            "Tamil": ["Tamil", "Tam", "Tami", "Tml"],
+            "Bengali": ["Bengali", "Ben", "Bng"],
+            "English": ["English", "Eng", "Engl", "En"],
+            "Marathi": ["Marathi", "Mar", "Mrt"],
+            "Hindi": ["Hindi", "Hin", "Hind"],
+            "Telugu": ["Telugu", "Tel", "Telg"],
+            "Malayalam": ["Malayalam", "Mal", "Mly"],
+            "Kannada": ["Kannada", "Kan", "Knd"],
+            "Punjabi": ["Punjabi", "Pnj", "Pun"],
+            "Gujarati": ["Gujarati", "Guj", "Gujr"],
+            "Korean": ["Korean", "Kor", "Krn"],
+            "Japanese": ["Japanese", "Jap", "Jpn"],
+            "Bhojpuri": ["Bhojpuri", "Bjp", "Bjpuri"],
+            "Chinese": ["Chinese", "Ch", "Chn"],
+            "Dual": ["Dual", "Dbl", "Dul"],
+            "Multi": ["Multi", "Mlti", "Mlt"]
+        }
+
+        # Iterate through the languages and check for matches
+        for lang, abbreviations in nb_languages.items():
+            for abbreviation in abbreviations:
+                if abbreviation.lower() in caption.lower():
+                    language += f"{lang}, "
+
+        # Normalize short forms to full language names
+        language = language.strip(", ")
+        if "tam" in language.lower():
+            language = "Tamil"
+        if "eng" in language.lower():
+            language = "English"
+        if "hin" in language.lower():
+            language = "Hindi"
+        if "tel" in language.lower():
+            language = "Telugu"
+        if "ben" in language.lower():
+            language = "Bengali"
+        if "mal" in language.lower():
+            language = "Malayalam"
+        if "kan" in language.lower():
+            language = "Kannada"
+        if "pun" in language.lower():
+            language = "Punjabi"
+        if "guj" in language.lower():
+            language = "Gujarati"
+        if "kor" in language.lower():
+            language = "Korean"
+        if "jap" in language.lower():
+            language = "Japanese"
+        if "bjp" in language.lower():
+            language = "Bhojpuri"
+        if "chi" in language.lower():
+            language = "Chinese"
+        if "dual" in language.lower():
+            language = "Dual"
+        if "multi" in language.lower():
+            language = "Multi"
+
+        language = language or "Not Idea"  # Default if no language is found
         movie_name = await movie_name_format(file_name)
         if movie_name in processed_movies:
             return
@@ -81,7 +143,7 @@ async def send_movie_updates(bot, file_name, caption, file_id):
         caption_message = f"<b>Movie :- <code>{movie}</code>\n\nYear :- {year if year else 'Not Available'}\n\nLanguage :- {language}\n\nQuality :- {quality.replace(', ', ' ')}\n\n📤 Uploading By :- <a href=https://t.me/Movies_Dayz>Movies Dayz</a>\n⚡ Powered By :- <a href=https://t.me/Star_Moviess_Tamil>Star Movies Tamil</a></b>"
         search_movie = movie_name.replace(" ", '-')
         if year:
-            search_movie = search_movie.replace(f"-{year}", "")
+            search_movie = search_movie.replace(f"-{year}", "")  # Remove the year part from the search string
         for channel_id in channels:
             btn = [[
                 InlineKeyboardButton('📂 Get File 📂', url=f'https://telegram.me/{temp.U_NAME}?start=getfile-{search_movie}')
@@ -111,4 +173,4 @@ async def send_movie_updates(bot, file_name, caption, file_id):
     except Exception as e:
         print(f"Failed to send movie update. Error: {e}")
         await bot.send_message(LOG_CHANNEL, f"Failed to send movie update. Error: {e}")
-        
+    
