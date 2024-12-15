@@ -55,7 +55,10 @@ if len(LOG_CHANNEL) == 0:
 else:
     LOG_CHANNEL = int(LOG_CHANNEL)
 MOVIE_UPDATE_CHANNEL = [int(movie_update_channel) if movie_update_channel.startswith("-") else movie_update_channel for movie_update_channel in environ.get('MOVIE_UPDATE_CHANNEL', '-1002244141688 -1001715180239 -1001589399161 -1001139111796 -1002097728232').split()]
-
+FORCE_SUB = [int(force_sub) if force_sub.startswith("-") else force_sub for force_sub in environ.get('FORCE_SUB', '-1002008853384 -1001589399161').split()]
+if len(FORCE_SUB) == 0:
+    print('Info - FORCE_SUB is empty')
+    
 # support group
 SUPPORT_GROUP = environ.get('SUPPORT_GROUP', '-1001895961046')
 if len(SUPPORT_GROUP) == 0:
