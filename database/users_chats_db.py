@@ -247,14 +247,20 @@ class Database:
         else:
             await self.botcol.insert_one({'id': int(bot_id), 'bot_pm_search': enable})
 
-    async def movies_update_channel_id(self , id=None):
-        if id is None:
-            myLinks = await self.movies_update_channel.find_one({})
-            if myLinks is not None:
-                return myLinks.get("id")
-            else:
-                return None
-        return await self.movies_update_channel.update_one({} , {'$set': {'id': id}} , upsert=True)
+    async def set_movie_update_channels(self, channels):
+        """
+        Save the list of movie update channels to the database.
+        """
+        await self.movies_update_channel.update_one(
+            {}, {'$set': {'channels': channels}}, upsert=True
+        )
+
+    async def get_movie_update_channels(self):
+        """
+        Retrieve the list of movie update channels from the database.
+        """
+        result = await self.movies_update_channel.find_one({})
+        return result.get("channels", []) if result else []
     
     async def get_all_chats_count(self):
         grp = await self.grp.find().to_list(None)
