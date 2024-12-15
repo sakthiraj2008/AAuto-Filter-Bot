@@ -42,7 +42,8 @@ async def start(client, message):
     if len(message.command) == 2 and message.command[1].startswith('getfile'):
         searches = message.command[1].split("-", 1)[1] 
         search = searches.replace('-',' ')
-        message.text = search 
+        message.text = search
+        s = await message.reply(f"<b>⚠️ `{message.text}` Searching...</b>", quote=True)
         await auto_filter(client, message, s) 
         return
     
