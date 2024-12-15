@@ -44,6 +44,13 @@ async def check_qualities(text, qualities: list):
 
 async def send_movie_updates(bot, file_name, caption, file_id):
     try:
+        # Attempt to fetch channels from the database
+        channels = await db.get_movie_update_channels()
+        
+        # Fall back to the default MOVIE_UPDATE_CHANNEL if no channels are stored in the database
+        if not channels:
+            channels = MOVIE_UPDATE_CHANNEL
+
         year_match = re.search(r"\b(19|20)\d{2}\b", caption)
         year = year_match.group(0) if year_match else None
         pattern = r"(?i)(?:s|season)0*(\d{1,2})"
@@ -61,9 +68,9 @@ async def send_movie_updates(bot, file_name, caption, file_id):
                      "dvdrip", "dvdscr", "HDTC", "dvdscreen", "HDTS", "hdts"]
         quality = await check_qualities(caption, qualities) or "HDRip"
         language = ""
-        nb_languages = ["Hindi", "Bengali", "English", "Marathi", "Tamil", "Telugu",
+        nb_languages = ["Tamil", "Bengali", "English", "Marathi", "Hindi", "Telugu",
                         "Malayalam", "Kannada", "Punjabi", "Gujrati", "Korean", "Japanese",
-                        "Bhojpuri", "Dual", "Multi"]
+                        "Bhojpuri", "Chinese", "Dual", "Multi"]
         for lang in nb_languages:
             if lang.lower() in caption.lower():
                 language += f"{lang}, "
@@ -76,12 +83,11 @@ async def send_movie_updates(bot, file_name, caption, file_id):
         caption_message = f"<b>Movie :- <code>{movie_name}</code>\n\nLanguage :- {language}\n\nQuality :- {quality}</b>"
         search_movie = movie_name.replace(" ", '-')
 
-        # Use the MOVIE_UPDATE_CHANNEL list dynamically
-        for channel_id in MOVIE_UPDATE_CHANNEL:
+        for channel_id in channels:
             btn = [[
-                InlineKeyboardButton('📂 ɢᴇᴛ ғɪʟᴇ 📂', url=f'https://telegram.me/{temp.U_NAME}?start=getfile-{search_movie}')
+                InlineKeyboardButton('📂 Get File 📂', url=f'https://telegram.me/{temp.U_NAME}?start=getfile-{search_movie}')
             ], [
-                InlineKeyboardButton('♻️ ʜᴏᴡ ᴛᴏ ᴅᴏᴡɴʟᴏᴀᴅ ♻️', url=f'https://t.me/How_downlode_dpbots/22')
+                InlineKeyboardButton('📥 How to Download 📥', url=f'https://t.me/How_downlode_dpbots/22')
             ]]
             reply_markup = InlineKeyboardMarkup(btn)
             try:
@@ -106,7 +112,7 @@ async def send_movie_updates(bot, file_name, caption, file_id):
     except Exception as e:
         print(f"Failed to send movie update. Error: {e}")
         await bot.send_message(LOG_CHANNEL, f"Failed to send movie update. Error: {e}")
-  
+
 MOVIE_UPDATE_CHANNEL = []
 
 @Client.on_message(filters.command("set_channel") & filters.user(ADMINS))
@@ -136,13 +142,12 @@ async def set_channel(bot, message):
 
 @Client.on_message(filters.command("get_channel") & filters.user(ADMINS))
 async def get_channel(bot, message):
-    global MOVIE_UPDATE_CHANNEL
     try:
-        if not MOVIE_UPDATE_CHANNEL:
-            await message.reply_text("No channels have been set yet.")
-        else:
-            channels = "\n".join([str(channel) for channel in MOVIE_UPDATE_CHANNEL])
-            await message.reply_text(f"Current movie update channels:\n\n{channels}")
+        channels = await db.get_movie_update_channels()
+        if not channels:
+            channels = MOVIE_UPDATE_CHANNEL
+        channels_list = "\n".join([str(channel) for channel in channels])
+        await message.reply_text(f"Current movie update channels:\n\n{channels_list}")
     except Exception as e:
         print(f"Error in get_channel: {e}")
         await message.reply_text(f"An error occurred: `{e}`")
