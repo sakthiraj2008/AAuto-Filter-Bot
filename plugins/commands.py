@@ -43,7 +43,7 @@ async def start(client, message):
         searches = message.command[1].split("-", 1)[1] 
         search = searches.replace('-',' ')
         message.text = search 
-        await auto_filter(client, message) 
+        await auto_filter(client, message, s) 
         return
     
     if (len(message.command) != 2) or (len(message.command) == 2 and message.command[1] == 'start'):
