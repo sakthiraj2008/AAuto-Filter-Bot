@@ -25,23 +25,23 @@ class script(object):
 🗳 Free Storage: <code>{}</code>
 🚀 Bot Uptime: <code>{}</code></b>"""
 
-    NEW_GROUP_TXT = """#NewGroup
+    NEW_GROUP_TXT = """<b>#NewGroup
 Title - {}
 ID - <code>{}</code>
 Username - {}
-Total - <code>{}</code>"""
+Total - <code>{}</code></b>"""
 
-    NEW_USER_TXT = """#NewUser
+    NEW_USER_TXT = """<b>#NewUser
 ★ Name: {}
-★ ID: <code>{}</code>"""
+★ ID: <code>{}</code></b>"""
 
-    NOT_FILE_TXT = """👋 Hello {},
+    NOT_FILE_TXT = """<b>👋 Hello {},
 
 I can't find the <b>{}</b> in my database! 🥲
 
 👉 Google Search and check your spelling is correct.
 👉 Please read the Instructions to get better results.
-👉 Or not been released yet."""
+👉 Or not been released yet.</b>"""
     
     EARN_TXT = """<b>ʜᴏᴡ ᴛᴏ ᴇᴀʀɴ ꜰʀᴏᴍ ᴛʜɪs ʙᴏᴛ
 
@@ -71,23 +71,23 @@ I can't find the <b>{}</b> in my database! 🥲
 
 📝 ɴᴏᴛᴇ:- ʏᴏᴜ sʜᴏᴜʟᴅ ɴᴏᴛ ʙᴇ ᴀɴ ᴀɴᴏɴʏᴍᴏᴜs ᴀᴅᴍɪɴ ɪɴ ɢʀᴏᴜᴘ. sᴇɴᴅ ᴄᴏᴍᴍᴀɴᴅ ᴡɪᴛʜᴏᴜᴛ ʙᴇɪɴɢ ᴀɴ ᴀɴᴏɴʏᴍᴜs ᴀᴅᴍɪɴ.</b>"""
 
-    IMDB_TEMPLATE = """✅ I Found: <code>{query}</code>
+    IMDB_TEMPLATE = """<b>✅ I Found: <code>{query}</code>
 
 🏷 Title: <a href={url}>{title}</a>
 🎭 Genres: {genres}
 📆 Year: <a href={url}/releaseinfo>{year}</a>
 🌟 Rating: <a href={url}/ratings>{rating} / 10</a>
 ☀️ Languages: {languages}
-📀 RunTime: {runtime} Minutes
+📀 Run Time: {runtime} Minutes
 
 🗣 Requested by: {message.from_user.mention}
-©️ Powered by: <b>{message.chat.title}</b>"""
+©️ Powered by: {message.chat.title}</b>"""
 
     FILE_CAPTION = """<b>@Movies_Dayz - {file_name}
     
 Join ➥ <a href="https://t.me/Movies_Dayz">Movies Dayz</a></b>"""
 
-    WELCOME_TEXT = """👋 Hello {mention}, Welcome to {title} group! 💞"""
+    WELCOME_TEXT = """<b>👋 Hello {mention}, Welcome to {title} group! 💞</b>"""
 
     HELP_TXT = """<b>Help :- Extra Modules
 
@@ -118,8 +118,7 @@ Commands and Usage :
 /users - to get all users details
 /chats - to get all groups
 /invite_link - to generate invite link
-/set_pm_search - to do pm search on/off
-/index - to index bot accessible channels</b>"""
+/set_pm_search - to do pm search on/off</b>"""
     
     USER_COMMAND_TXT = """<b>Here is bot user commands 👇
 
@@ -141,7 +140,7 @@ Commands and Usage :
 
 - ꜱᴏᴜʀᴄᴇ - <a href=https://t.me/U_Karthik>ʜᴇʀᴇ</a>
 
-- ᴅᴇᴠʟᴏᴘᴇʀ - @DP_BOTZ"""
+- ᴅᴇᴠʟᴏᴘᴇʀ - @DP_BOTZ</b>"""
 
     PREMIUM_PLAN_TEXT = """<b><i><u>- ᴀᴠᴀɪʟᴀʙʟᴇ ᴘʟᴀɴs - </u>
 
