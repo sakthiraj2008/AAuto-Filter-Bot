@@ -3,7 +3,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, InlineQue
 from database.ia_filterdb import get_search_results
 from database.users_chats_db import db
 from utils import get_size, temp
-from info import CACHE_TIME, SUPPORT_LINK, UPDATES_LINK, FILE_CAPTION
+from info import CACHE_TIME, SUPPORT_LINK, UPDATES_LINK, FILE_CAPTION, OWNER_USERNAME
 
 cache_time = CACHE_TIME
 
