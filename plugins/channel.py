@@ -58,13 +58,6 @@ async def send_movie_updates(bot, file_name, caption, file_id):
         if not season:
             season = re.search(pattern, file_name)
         
-        # Remove year and season from the file name
-        if year:
-            file_name = file_name[:file_name.find(year) + 4]
-        if season:
-            season = season.group(1) if season else None
-            file_name = file_name[:file_name.find(season) + 1]
-
         # Set movie quality (if available)
         qualities = ["hdcam", "HDCAM", "HDRip", "hdrip", "SDTV", "sdtv", "HDTV", "HDTV", "BluRay", "bluray", "HD DVD", "hd dvd",
                      "camrip", "WEB-DL", "CAMRip", "hdtc", "PreDVD", "DVDscr", "dvdscr", "WEB-HD", "web-hd", "BDRip", "bdrip",
@@ -72,7 +65,7 @@ async def send_movie_updates(bot, file_name, caption, file_id):
         quality = await check_qualities(caption, qualities) or "HDRip"
 
         # Detect language (including abbreviations)
-        language = ""
+        language = []
         nb_languages = {
             "Tamil": ["Tamil", "Tam", "Tami", "Tml"],
             "Bengali": ["Bengali", "Ben", "Bng"],
@@ -92,85 +85,52 @@ async def send_movie_updates(bot, file_name, caption, file_id):
             "Multi": ["Multi", "Mlti", "Mlt"]
         }
 
-        # Iterate through the languages and check for matches
+        # Identify languages
         for lang, abbreviations in nb_languages.items():
             for abbreviation in abbreviations:
-                if abbreviation.lower() in caption.lower():
-                    language += f"{lang}, "
+                if abbreviation.lower() in caption.lower() and lang not in language:
+                    language.append(lang)
 
-        # Normalize short forms to full language names
-        language = language.strip(", ")
-        if "tam" in language.lower():
-            language = "Tamil"
-        if "eng" in language.lower():
-            language = "English"
-        if "hin" in language.lower():
-            language = "Hindi"
-        if "tel" in language.lower():
-            language = "Telugu"
-        if "ben" in language.lower():
-            language = "Bengali"
-        if "mal" in language.lower():
-            language = "Malayalam"
-        if "kan" in language.lower():
-            language = "Kannada"
-        if "pun" in language.lower():
-            language = "Punjabi"
-        if "guj" in language.lower():
-            language = "Gujarati"
-        if "kor" in language.lower():
-            language = "Korean"
-        if "jap" in language.lower():
-            language = "Japanese"
-        if "bjp" in language.lower():
-            language = "Bhojpuri"
-        if "chi" in language.lower():
-            language = "Chinese"
-        if "dual" in language.lower():
-            language = "Dual"
-        if "multi" in language.lower():
-            language = "Multi"
+        # Format languages into "Language1 + Language2 + Language3" or default to "Not Available"
+        language_str = " + ".join(language) if language else "Not Available"
 
-        language = language or "Not Idea"  # Default if no language is found
+        # Format movie name
         movie_name = await movie_name_format(file_name)
         if movie_name in processed_movies:
             return
         processed_movies.add(movie_name)
         movie = await movie_name_format(file_name)
+        movie_display_name = movie_name
         if year:
             movie = movie.replace(f" {year}", "")
-        poster_url = await get_imdb(movie_name)
-        caption_message = f"<b>Movie :- <code>{movie}</code>\n\nYear :- {year if year else 'Not Available'}\n\nLanguage :- {language}\n\nQuality :- {quality.replace(', ', ' ')}\n\n📤 Uploading By :- <a href=https://t.me/Movies_Dayz>Movies Dayz</a>\n⚡ Powered By :- <a href=https://t.me/Star_Moviess_Tamil>Star Movies Tamil</a></b>"
+        # Get poster URL or fallback to default
+        poster_url = await get_imdb(movie_name) or "https://telegra.ph/file/88d845b4f8a024a71465d.jpg"
+        caption_message = f"<b>Movie :- <code>{movie}</code>\n\nYear :- {year if year else 'Not Available'}\n\nLanguage :- {language}\n\nQuality :- {quality.replace(', ', ' ')}\n\n📤 Uploading By :- <a href=https://t.me/Movies_Dayz>Movies Dayz</a>\n\n⚡ Powered By :- <a href=https://t.me/Star_Moviess_Tamil>Star Movies Tamil</a></b>"
+        # Generate search movie string
         search_movie = movie_name.replace(" ", '-')
         if year:
-            search_movie = search_movie.replace(f"-{year}", "")  # Remove the year part from the search string
+            search_movie = search_movie.replace(f"-{year}", "")
+
+        # Buttons for channels
+        btn = [[
+            InlineKeyboardButton('📂 Get File 📂', url=f'https://telegram.me/{temp.U_NAME}?start=getfile-{search_movie}')
+        ], [
+            InlineKeyboardButton('📥 How to Download 📥', url=f'https://t.me/How_downlode_dpbots/22')
+        ]]
+        reply_markup = InlineKeyboardMarkup(btn)
+
+        # Send to all channels
         for channel_id in channels:
-            btn = [[
-                InlineKeyboardButton('📂 Get File 📂', url=f'https://telegram.me/{temp.U_NAME}?start=getfile-{search_movie}')
-            ], [
-                InlineKeyboardButton('📥 How to Download 📥', url=f'https://t.me/How_downlode_dpbots/22')
-            ]]
-            reply_markup = InlineKeyboardMarkup(btn)
             try:
-                if poster_url:
-                    await bot.send_photo(
-                        channel_id,
-                        photo=poster_url,
-                        caption=caption_message,
-                        reply_markup=reply_markup
-                    )
-                else:
-                    no_poster = "https://telegra.ph/file/88d845b4f8a024a71465d.jpg"
-                    await bot.send_photo(
-                        channel_id,
-                        photo=no_poster,
-                        caption=caption_message,
-                        reply_markup=reply_markup
-                    )
+                await bot.send_photo(
+                    channel_id,
+                    photo=poster_url,
+                    caption=caption_message,
+                    reply_markup=reply_markup
+                )
             except Exception as e:
                 print(f"Failed to send update to channel {channel_id}. Error: {e}")
                 await bot.send_message(LOG_CHANNEL, f"Failed to send update to channel {channel_id}. Error: {e}")
     except Exception as e:
         print(f"Failed to send movie update. Error: {e}")
         await bot.send_message(LOG_CHANNEL, f"Failed to send movie update. Error: {e}")
-    
