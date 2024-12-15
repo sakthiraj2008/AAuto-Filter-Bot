@@ -121,6 +121,7 @@ async def start(client, message):
             btn = await is_subscribed(client, message, settings['fsub'])
             if btn:
                 btn.append(
+                    [InlineKeyboardButton("💫 Join Our Channel 💫", url="https://t.me/+YeduZ6Ztq2YwNTdl")],
                     [InlineKeyboardButton("🔁 Try Again 🔁", callback_data=f"checksub#{mc}")]
                 )
                 reply_markup = InlineKeyboardMarkup(btn)
