@@ -44,11 +44,9 @@ async def check_qualities(text, qualities: list):
 
 async def send_movie_updates(bot, file_name, caption, file_id):
     try:
-        # Attempt to fetch channels from the database
         channels = await db.get_movie_update_channels()
         if not channels:
             channels = MOVIE_UPDATE_CHANNEL
-
         year_match = re.search(r"\b(19|20)\d{2}\b", caption)
         year = year_match.group(0) if year_match else None
         pattern = r"(?i)(?:s|season)0*(\d{1,2})"
@@ -57,17 +55,16 @@ async def send_movie_updates(bot, file_name, caption, file_id):
             season = re.search(pattern, file_name)
         if year:
             file_name = file_name[:file_name.find(year) + 4]
-        if not year:
-            if season:
-                season = season.group(1) if season else None
-                file_name = file_name[:file_name.find(season) + 1]
-        qualities = ["ORG", "org", "hdcam", "HDCAM", "HQ", "hq", "HDRip", "hdrip",
-                     "camrip", "WEB-DL", "CAMRip", "hdtc", "predvd", "DVDscr", "dvdscr",
+        if season:
+            season = season.group(1) if season else None
+            file_name = file_name[:file_name.find(season) + 1]
+        qualities = ["ORG", "org", "hdcam", "HDCAM", "HQ", "hq", "HDRip", "hdrip", 
+                     "camrip", "TRUE WEB-DL", "CAMRip", "hdtc", "predvd", "PreDVD", "DVDscr", "dvdscr",
                      "dvdrip", "dvdscr", "HDTC", "dvdscreen", "HDTS", "hdts"]
         quality = await check_qualities(caption, qualities) or "HDRip"
         language = ""
-        nb_languages = ["Tamil", "Bengali", "English", "Marathi", "Hindi", "Telugu",
-                        "Malayalam", "Kannada", "Punjabi", "Gujrati", "Korean", "Japanese",
+        nb_languages = ["Tamil", "Bengali", "English", "Marathi", "Hindi", "Telugu", 
+                        "Malayalam", "Kannada", "Punjabi", "Gujrati", "Korean", "Japanese", 
                         "Bhojpuri", "Chinese", "Dual", "Multi"]
         for lang in nb_languages:
             if lang.lower() in caption.lower():
@@ -78,9 +75,10 @@ async def send_movie_updates(bot, file_name, caption, file_id):
             return
         processed_movies.add(movie_name)
         poster_url = await get_imdb(movie_name)
-        caption_message = f"<b>Movie :- <code>{movie_name}</code>\n\nLanguage :- {language}\n\nQuality :- {quality}\n\n📤 Uploading By :- <a href=https://t.me/Movies_Dayz>Movies Dayz</a>\n\n⚡ Powered By :- <a href=https://t.me/Star_Moviess_Tamil>Star Movies Tamil</a></b>"
+        caption_message = f"<b>Movie :- <code>{movie_name}</code>\nYear :- {year if year else 'Not Available'}\nLanguage :- {language}\nQuality :- {quality.replace(', ', ' ')}\n\n📤 Uploading By :- <a href=https://t.me/Movies_Dayz>Movies Dayz</a>\n⚡ Powered By :- <a href=https://t.me/Star_Moviess_Tamil>Star Movies Tamil</a></b>"
         search_movie = movie_name.replace(" ", '-')
-
+        if year:
+            search_movie = search_movie.replace(f"-{year}", "")
         for channel_id in channels:
             btn = [[
                 InlineKeyboardButton('📂 Get File 📂', url=f'https://telegram.me/{temp.U_NAME}?start=getfile-{search_movie}')
@@ -110,4 +108,4 @@ async def send_movie_updates(bot, file_name, caption, file_id):
     except Exception as e:
         print(f"Failed to send movie update. Error: {e}")
         await bot.send_message(LOG_CHANNEL, f"Failed to send movie update. Error: {e}")
-
+        
