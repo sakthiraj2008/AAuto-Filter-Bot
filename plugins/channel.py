@@ -1,6 +1,6 @@
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from info import INDEX_CHANNELS, ADMINS , LOG_CHANNEL
+from info import INDEX_CHANNELS, ADMINS , LOG_CHANNEL, MOVIE_UPDATE_CHANNEL
 from database.ia_filterdb import save_file, unpack_new_file_id
 from utils import get_poster, temp
 import re
