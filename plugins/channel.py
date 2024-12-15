@@ -46,8 +46,6 @@ async def send_movie_updates(bot, file_name, caption, file_id):
     try:
         # Attempt to fetch channels from the database
         channels = await db.get_movie_update_channels()
-        
-        # Fall back to the default MOVIE_UPDATE_CHANNEL if no channels are stored in the database
         if not channels:
             channels = MOVIE_UPDATE_CHANNEL
 
@@ -80,7 +78,7 @@ async def send_movie_updates(bot, file_name, caption, file_id):
             return
         processed_movies.add(movie_name)
         poster_url = await get_imdb(movie_name)
-        caption_message = f"<b>Movie :- <code>{movie_name}</code>\n\nLanguage :- {language}\n\nQuality :- {quality}</b>"
+        caption_message = f"<b>Movie :- <code>{movie_name}</code>\n\nLanguage :- {language}\n\nQuality :- {quality}\n📤 Uploading By :- <a href=https://t.me/Movies_Dayz>Movies Dayz</a>\n⚡ Powered By :- <a href=https://t.me/Star_Moviess_Tamil>Star Movies Tamil</a></b>"
         search_movie = movie_name.replace(" ", '-')
 
         for channel_id in channels:
