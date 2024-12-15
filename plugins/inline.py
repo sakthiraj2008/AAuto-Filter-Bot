@@ -1,6 +1,7 @@
 from pyrogram import Client, emoji
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, InlineQueryResultCachedDocument, InlineQuery
 from database.ia_filterdb import get_search_results
+from database.users_chats_db import db
 from utils import get_size, temp
 from info import CACHE_TIME, SUPPORT_LINK, UPDATES_LINK, FILE_CAPTION
 
@@ -16,10 +17,26 @@ async def inline_search(bot, query):
     if is_banned(query):
         await query.answer(results=[],
                            cache_time=0,
-                           switch_pm_text="You're banned user :(",
+                           switch_pm_text="**You're Banned User**",
                            switch_pm_parameter="start")
         return
 
+    user_id = query.from_user.id
+    if not await db.has_premium_access(user_id):
+        # If the user doesn't have premium access, show the premium prompt
+        buttons = [[
+            InlineKeyboardButton('💎 Buy Premium 💎', url="https://t.me/Star_Moviess_Bot?start=plans"),
+            InlineKeyboardButton('Send Payment Receipt 🧾', url=OWNER_USERNAME)
+        ]]
+        reply_markup = InlineKeyboardMarkup(buttons)
+        await query.answer(
+            results=[],
+            cache_time=0,
+            switch_pm_text="**This is a Premium Feature. Buy Premium to Access.**",
+            switch_pm_parameter="start",
+            reply_markup=reply_markup
+        )
+        return
 
     results = []
     string = query.query
@@ -28,7 +45,7 @@ async def inline_search(bot, query):
 
     for file in files:
         reply_markup = get_reply_markup()
-        f_caption=FILE_CAPTION.format(
+        f_caption = FILE_CAPTION.format(
             file_name=file.file_name,
             file_size=get_size(file.file_size),
             caption=file.caption
@@ -46,17 +63,17 @@ async def inline_search(bot, query):
         if string:
             switch_pm_text += f' For: {string}'
         await query.answer(results=results,
-                        is_personal = True,
-                        cache_time=cache_time,
-                        switch_pm_text=switch_pm_text,
-                        switch_pm_parameter="start",
-                        next_offset=str(next_offset))
+                           is_personal=True,
+                           cache_time=cache_time,
+                           switch_pm_text=switch_pm_text,
+                           switch_pm_parameter="start",
+                           next_offset=str(next_offset))
     else:
         switch_pm_text = f'{emoji.CROSS_MARK} No Results'
         if string:
             switch_pm_text += f' For: {string}'
         await query.answer(results=[],
-                           is_personal = True,
+                           is_personal=True,
                            cache_time=cache_time,
                            switch_pm_text=switch_pm_text,
                            switch_pm_parameter="start")
@@ -64,7 +81,8 @@ async def inline_search(bot, query):
 
 def get_reply_markup():
     buttons = [[
-        InlineKeyboardButton('⚡️ ᴜᴘᴅᴀᴛᴇs ᴄʜᴀɴɴᴇʟ ⚡️', url=UPDATES_LINK),
+        InlineKeyboardButton('⚡️ Updates Channel ⚡️', url=UPDATES_LINK),
         InlineKeyboardButton('💡 Support Group 💡', url=SUPPORT_LINK)
     ]]
     return InlineKeyboardMarkup(buttons)
+    
