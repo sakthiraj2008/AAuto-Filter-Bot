@@ -570,7 +570,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         if btn:
             await query.answer(f"Hello {query.from_user.first_name},\nPlease join my updates channel and try again.", show_alert=True)
             btn.append(
-                [InlineKeyboardButton("💫 Join Our Channel 💫", url="https://t.me/+YeduZ6Ztq2YwNTdl")]
+                [InlineKeyboardButton("💫 Join Our Channel 💫", url="https://t.me/+YeduZ6Ztq2YwNTdl")],
                 [InlineKeyboardButton("🔁 Try Again 🔁", callback_data=f"checksub#{mc}")]
             )
             await query.edit_message_reply_markup(reply_markup=InlineKeyboardMarkup(btn))
