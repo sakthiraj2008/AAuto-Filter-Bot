@@ -76,6 +76,8 @@ def get_reply_markup():
     buttons = [[
         InlineKeyboardButton('⚡️ Updates Channel ⚡️', url=UPDATES_LINK),
         InlineKeyboardButton('💡 Support Group 💡', url=SUPPORT_LINK)
+        ],[
+        InlineKeyboardButton('🔎 Search Again', switch_inline_query_current_chat='')
     ]]
     return InlineKeyboardMarkup(buttons)
     
