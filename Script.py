@@ -13,8 +13,11 @@ class script(object):
 ★ Channel: <a href=https://t.me/DP_BOTZ>DP Bots</a></b>"""
 
     MY_OWNER_TXT = """<b>★ Name: DP Botz & Star Bots Tamil
+    
 ★ Username: @DP_BOTZ & @Star_Bots_Tamil
+
 ★ Country: India 🇮🇳
+
 ★ Nationality: Tamizhan 🏹 🐯 🎏</b>"""
 
     STATUS_TXT = """<b>🗂 Total Files: <code>{}</code>
