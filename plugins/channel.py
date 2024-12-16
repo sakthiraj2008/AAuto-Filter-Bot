@@ -22,6 +22,13 @@ async def media(bot, message):
         if success_sts == 'suc' and await db.get_send_movie_update_status(bot_id):
             file_id, file_ref = unpack_new_file_id(media.file_id)
             await send_movie_updates(bot, file_name=media.file_name, caption=media.caption, file_id=file_id)
+            
+async def get_imdb(file_name):
+    imdb_file_name = await movie_name_format(file_name)
+    imdb = await get_poster(imdb_file_name)
+    if imdb and 'poster' in imdb:
+        return imdb.get('poster')
+    return "https://telegra.ph/file/88d845b4f8a024a71465d.jpg"
 
 async def get_imdb(file_name):
     imdb_file_name = await movie_name_format(file_name)
@@ -100,14 +107,11 @@ async def send_movie_updates(bot, file_name, caption, file_id):
             return
         processed_movies.add(movie_name)
         movie = await movie_name_format(file_name)
-        movie_display_name = movie_name
         if year:
             movie = movie.replace(f" {year}", "")
-        # Get poster URL or fallback to default
-        poster_url = await get_imdb(movie_name) or "https://telegra.ph/file/88d845b4f8a024a71465d.jpg"
+        poster_url = await get_imdb(movie)
         caption_message = f"<b>Movie :- <code>{movie}</code>\n\nYear :- {year if year else 'Not Available'}\n\nLanguage :- {language}\n\nQuality :- {quality.replace(', ', ' ')}\n\n📤 Uploading By :- <a href=https://t.me/Movies_Dayz>Movies Dayz</a>\n\n⚡ Powered By :- <a href=https://t.me/Star_Moviess_Tamil>Star Movies Tamil</a></b>"
-        # Generate search movie string
-        search_movie = movie_name.replace(" ", '-')
+        search_movie = movie.replace(" ", '-')
         if year:
             search_movie = search_movie.replace(f"-{year}", "")
 
