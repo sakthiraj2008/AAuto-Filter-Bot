@@ -92,7 +92,7 @@ async def send_movie_updates(bot, file_name, caption, file_id):
             "Multi": ["Multi", "Mlti", "Mlt"]
         }
 
-        languages = await check_languages(caption, nb_languages) or "Not Idea"
+        language = await check_languages(caption, nb_languages) or "Not Idea"
         # Format movie name
         movie_name = await movie_name_format(file_name)
         if movie_name in processed_movies:
