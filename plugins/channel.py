@@ -29,13 +29,6 @@ async def get_imdb(file_name):
     if imdb and 'poster' in imdb:
         return imdb.get('poster')
     return "https://telegra.ph/file/88d845b4f8a024a71465d.jpg"
-
-async def get_imdb(file_name):
-    imdb_file_name = await movie_name_format(file_name)
-    imdb = await get_poster(imdb_file_name)
-    if imdb:
-        return imdb.get('poster')
-    return None
     
 async def movie_name_format(file_name):
   filename = re.sub(r'http\S+', '', re.sub(r'@\w+|#\w+', '', file_name).replace('_', ' ').replace('[', '').replace(']', '').replace('(', '').replace(')', '').replace('{', '').replace('}', '').replace('.', ' ').replace('@', '').replace(':', '').replace(';', '').replace("'", '').replace('-', '').replace('!', '')).strip()
@@ -48,6 +41,14 @@ async def check_qualities(text, qualities: list):
             quality.append(q)
     quality = ", ".join(quality)
     return quality[:-2] if quality.endswith(", ") else quality
+
+async def check_languages(text, languages: list):
+    matched_languages = []
+    for lang in languages:
+        if lang.lower() in text.lower():
+            matched_languages.append(lang)
+    result = " + ".join(matched_languages)
+    return result[:-2] if result.endswith(" + ") else result
 
 async def send_movie_updates(bot, file_name, caption, file_id):
     try:
@@ -72,7 +73,6 @@ async def send_movie_updates(bot, file_name, caption, file_id):
         quality = await check_qualities(caption, qualities) or "HDRip"
 
         # Detect language (including abbreviations)
-        language = []
         nb_languages = {
             "Tamil": ["Tamil", "Tam", "Tami", "Tml"],
             "Bengali": ["Bengali", "Ben", "Bng"],
@@ -92,15 +92,7 @@ async def send_movie_updates(bot, file_name, caption, file_id):
             "Multi": ["Multi", "Mlti", "Mlt"]
         }
 
-        # Identify languages
-        for lang, abbreviations in nb_languages.items():
-            for abbreviation in abbreviations:
-                if abbreviation.lower() in caption.lower() and lang not in language:
-                    language.append(lang)
-
-        # Format languages into "Language1 + Language2 + Language3" or default to "Not Available"
-        language_str = " + ".join(language) if language else "Not Available"
-
+        languages = await check_languages(caption, nb_languages) or "Not Idea"
         # Format movie name
         movie_name = await movie_name_format(file_name)
         if movie_name in processed_movies:
