@@ -93,7 +93,6 @@ async def send_movie_updates(bot, file_name, caption, file_id):
             return 
         processed_movies.add(movie_name)    
         # Remove year from movie name
-        search_movie = movie_name.replace(" ", '-')
         if year:
             movie_name = movie_name.replace(f" {year}", "")
 
@@ -101,6 +100,7 @@ async def send_movie_updates(bot, file_name, caption, file_id):
         poster_url = await get_imdb(movie_name)
         caption_message = f"<b>Movie :- <code>{movie_name}</code>\n\nYear :- {year if year else 'Not Available'}\n\nLanguage :- {language}\n\nQuality :- {quality.replace(', ', ' ')}\n\n📤 Uploading By :- <a href=https://t.me/Movies_Dayz>Movies Dayz</a>\n⚡ Powered By :- <a href=https://t.me/Star_Moviess_Tamil>Star Movies Tamil</a></b>"
         # Prepare buttons
+        search_movie = movie_name.replace(" ", '-')
         if year:
             search_movie = search_movie.replace(f"-{year}", "")  # Remove the year part from the search string
         btn = [
