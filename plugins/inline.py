@@ -24,18 +24,11 @@ async def inline_search(bot, query):
     user_id = query.from_user.id
     if not await db.has_premium_access(user_id):
         # If the user doesn't have premium access, show the premium prompt
-        buttons = [[
-            InlineKeyboardButton('💎 Buy Premium 💎', url="https://t.me/Star_Moviess_Bot?start=plans"),
-            InlineKeyboardButton('Send Payment Receipt 🧾', url=OWNER_USERNAME)
-        ]]
-        reply_markup = InlineKeyboardMarkup(buttons)
         await query.answer(
             results=[],
             cache_time=0,
             switch_pm_text="This is a Premium Feature. Buy Premium to Access.",
-            switch_pm_parameter="start",
-            reply_markup=reply_markup
-        )
+            switch_pm_parameter="https://t.me/Star_Moviess_Bot?start=plans")
         return
 
     results = []
