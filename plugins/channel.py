@@ -1,14 +1,12 @@
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from info import INDEX_CHANNELS, ADMINS , LOG_CHANNEL, MOVIE_UPDATE_CHANNEL
+from info import INDEX_CHANNELS, LOG_CHANNEL, MOVIE_UPDATE_CHANNEL
 from database.ia_filterdb import save_file, unpack_new_file_id
 from utils import get_poster, temp
 import re
 from database.users_chats_db import db
 
 processed_movies = set()
-media_filter = filters.document | filters.video
-
 media_filter = filters.document | filters.video
 
 @Client.on_message(filters.chat(INDEX_CHANNELS) & media_filter)
@@ -26,159 +24,113 @@ async def media(bot, message):
 async def get_imdb(file_name):
     imdb_file_name = await movie_name_format(file_name)
     imdb = await get_poster(imdb_file_name)
-    if imdb:
+    if imdb and 'poster' in imdb:
         return imdb.get('poster')
-    return None
-    
+    return "https://telegra.ph/file/88d845b4f8a024a71465d.jpg"  # Default poster
+
 async def movie_name_format(file_name):
-  filename = re.sub(r'http\S+', '', re.sub(r'@\w+|#\w+', '', file_name).replace('_', ' ').replace('[', '').replace(']', '').replace('(', '').replace(')', '').replace('{', '').replace('}', '').replace('.', ' ').replace('@', '').replace(':', '').replace(';', '').replace("'", '').replace('-', '').replace('!', '')).strip()
-  return filename
+    # Clean and format the movie name
+    filename = re.sub(r'http\S+', '', re.sub(r'@\w+|#\w+', '', file_name)
+                      .replace('_', ' ').replace('[', '').replace(']', '')
+                      .replace('(', '').replace(')', '').replace('{', '')
+                      .replace('}', '').replace('.', ' ').replace('@', '')
+                      .replace(':', '').replace(';', '').replace("'", '')
+                      .replace('-', '').replace('!', '')).strip()
+    return filename
 
-async def check_qualities(text, qualities: list):
-    quality = []
-    for q in qualities:
-        if q in text:
-            quality.append(q)
-    quality = ", ".join(quality)
-    return quality[:-2] if quality.endswith(", ") else quality
+async def check_qualities(text, qualities):
+    quality = [q for q in qualities if q.lower() in text.lower()]
+    return ", ".join(quality)
 
-async def check_languages(text, languages: list):
+async def check_languages(text, languages):
     matched_languages = []
-    for lang in languages:
-        if lang.lower() in text.lower():
-            matched_languages.append(lang)
-    result = " + ".join(matched_languages)
-    return result[:-2] if result.endswith(" + ") else result
+    for lang, abbreviations in languages.items():
+        for abbr in abbreviations:
+            if abbr.lower() in text.lower():
+                matched_languages.append(lang)
+                break  # Avoid duplicate detection
+    return " + ".join(matched_languages)
 
 async def send_movie_updates(bot, file_name, caption, file_id):
     try:
-        channels = await db.get_movie_update_channels()
-        if not channels:
-            channels = MOVIE_UPDATE_CHANNEL
+        channels = await db.get_movie_update_channels() or MOVIE_UPDATE_CHANNEL
 
-        # Extract the year from the caption (if it exists)
+        # Extract year and season
         year_match = re.search(r"\b(19|20)\d{2}\b", caption)
-        year = year_match.group(0) if year_match else None
+        year = year_match.group(0) if year_match else "Not Available"
+        season_match = re.search(r"(?i)(?:s|season)0*(\d{1,2})", caption)
+        season = season_match.group(1) if season_match else None
 
-        # Extract the season information (if it exists)
-        pattern = r"(?i)(?:s|season)0*(\d{1,2})"
-        season = re.search(pattern, caption)
-        if not season:
-            season = re.search(pattern, file_name)
-        
-        # Remove year and season from the file name
-        if year:
-            file_name = file_name[:file_name.find(year) + 4]
-        if season:
-            season = season.group(1) if season else None
-            file_name = file_name[:file_name.find(season) + 1]
-
-        # Set movie quality (if available)
-        qualities = ["hdcam", "HDCAM", "HDRip", "hdrip", "SDTV", "sdtv", "HDTV", "HDTV", "BluRay", "bluray", "HD DVD", "hd dvd",
-                     "camrip", "WEB-DL", "CAMRip", "hdtc", "PreDVD", "DVDscr", "dvdscr", "WEB-HD", "web-hd", "BDRip", "bdrip",
-                     "dvdrip", "dvdscr", "HDTC", "dvdscreen", "HDTS", "hdts"]
+        # Set movie quality
+        qualities = ["HDCAM", "HDRip", "SDTV", "HDTV", "BluRay", "HD DVD", "WEB-DL", "CAMRip", "PreDVD", 
+                     "DVDscr", "WEB-HD", "BDRip", "DVDRip", "HDTS"]
         quality = await check_qualities(caption, qualities) or "HDRip"
 
-        # Detect language (including abbreviations)
-        language = ""
-        nb_languages = {
-            "Tamil": ["Tamil", "Tam", "Tami", "Tml"],
-            "Bengali": ["Bengali", "Ben", "Bng"],
-            "English": ["English", "Eng", "Engl", "En"],
-            "Marathi": ["Marathi", "Mar", "Mrt"],
-            "Hindi": ["Hindi", "Hin", "Hind"],
-            "Telugu": ["Telugu", "Tel", "Telg"],
-            "Malayalam": ["Malayalam", "Mal", "Mly"],
-            "Kannada": ["Kannada", "Kan", "Knd"],
-            "Punjabi": ["Punjabi", "Pnj", "Pun"],
-            "Gujarati": ["Gujarati", "Guj", "Gujr"],
-            "Korean": ["Korean", "Kor", "Krn"],
-            "Japanese": ["Japanese", "Jap", "Jpn"],
-            "Bhojpuri": ["Bhojpuri", "Bjp", "Bjpuri"],
-            "Chinese": ["Chinese", "Ch", "Chn"],
-            "Dual": ["Dual", "Dbl", "Dul"],
-            "Multi": ["Multi", "Mlti", "Mlt"]
+        # Detect languages
+        language_map = {
+            "Tamil": ["Tamil", "Tam"],
+            "Bengali": ["Bengali", "Ben"],
+            "English": ["English", "Eng"],
+            "Marathi": ["Marathi", "Mar"],
+            "Hindi": ["Hindi", "Hin"],
+            "Telugu": ["Telugu", "Tel"],
+            "Malayalam": ["Malayalam", "Mal"],
+            "Kannada": ["Kannada", "Kan"],
+            "Punjabi": ["Punjabi", "Pun"],
+            "Gujarati": ["Gujarati", "Guj"],
+            "Korean": ["Korean", "Kor"],
+            "Japanese": ["Japanese", "Jap"],
+            "Bhojpuri": ["Bhojpuri", "Bjp"],
+            "Chinese": ["Chinese", "Ch"],
+            "Dual": ["Dual"],
+            "Multi": ["Multi"]
         }
+        language = await check_languages(caption, language_map) or "Not Available"
 
-        # Iterate through the languages and check for matches
-        for lang, abbreviations in nb_languages.items():
-            for abbreviation in abbreviations:
-                if abbreviation.lower() in caption.lower():
-                    language += f"{lang}, "
-
-        # Normalize short forms to full language names
-        language = language.strip(", ")
-        if "tam" in language.lower():
-            language = "Tamil"
-        if "eng" in language.lower():
-            language = "English"
-        if "hin" in language.lower():
-            language = "Hindi"
-        if "tel" in language.lower():
-            language = "Telugu"
-        if "ben" in language.lower():
-            language = "Bengali"
-        if "mal" in language.lower():
-            language = "Malayalam"
-        if "kan" in language.lower():
-            language = "Kannada"
-        if "pun" in language.lower():
-            language = "Punjabi"
-        if "guj" in language.lower():
-            language = "Gujarati"
-        if "kor" in language.lower():
-            language = "Korean"
-        if "jap" in language.lower():
-            language = "Japanese"
-        if "bjp" in language.lower():
-            language = "Bhojpuri"
-        if "chi" in language.lower():
-            language = "Chinese"
-        if "dual" in language.lower():
-            language = "Dual"
-        if "multi" in language.lower():
-            language = "Multi"
-        language = await check_languages(caption, nb_languages) or "Not Idea"
-        language = language or "Not Idea"  # Default if no language is found
+        # Format movie name
         movie_name = await movie_name_format(file_name)
         if movie_name in processed_movies:
             return
         processed_movies.add(movie_name)
-        movie = await movie_name_format(file_name)
-        if year:
-            movie = movie.replace(f" {year}", "")
+
+        # Remove year from movie name
+        if year != "Not Available":
+            movie_name = movie_name.replace(f" {year}", "")
+
+        # Get poster URL
         poster_url = await get_imdb(movie_name)
-        caption_message = f"<b>Movie :- <code>{movie}</code>\n\nYear :- {year if year else 'Not Available'}\n\nLanguage :- {language}\n\nQuality :- {quality.replace(', ', ' ')}\n\n📤 Uploading By :- <a href=https://t.me/Movies_Dayz>Movies Dayz</a>\n⚡ Powered By :- <a href=https://t.me/Star_Moviess_Tamil>Star Movies Tamil</a></b>"
+
+        # Create caption
+        caption_message = (
+            f"<b>Movie: <code>{movie_name}</code>\n\n"
+            f"Year: {year}\n\n"
+            f"Language: {language}\n\n"
+            f"Quality: {quality}\n\n"
+            f"📤 Uploading By: <a href='https://t.me/Movies_Dayz'>Movies Dayz</a>\n"
+            f"⚡ Powered By: <a href='https://t.me/Star_Moviess_Tamil'>Star Movies Tamil</a></b>"
+        )
+
+        # Prepare buttons
         search_movie = movie_name.replace(" ", '-')
-        if year:
-            search_movie = search_movie.replace(f"-{year}", "")  # Remove the year part from the search string
+        btn = [
+            [InlineKeyboardButton('📂 Get File 📂', url=f'https://telegram.me/{temp.U_NAME}?start=getfile-{search_movie}')],
+            [InlineKeyboardButton('📥 How to Download 📥', url='https://t.me/How_downlode_dpbots/22')]
+        ]
+        reply_markup = InlineKeyboardMarkup(btn)
+
+        # Send to channels
         for channel_id in channels:
-            btn = [[
-                InlineKeyboardButton('📂 Get File 📂', url=f'https://telegram.me/{temp.U_NAME}?start=getfile-{search_movie}')
-            ], [
-                InlineKeyboardButton('📥 How to Download 📥', url=f'https://t.me/How_downlode_dpbots/22')
-            ]]
-            reply_markup = InlineKeyboardMarkup(btn)
             try:
-                if poster_url:
-                    await bot.send_photo(
-                        channel_id,
-                        photo=poster_url,
-                        caption=caption_message,
-                        reply_markup=reply_markup
-                    )
-                else:
-                    no_poster = "https://telegra.ph/file/88d845b4f8a024a71465d.jpg"
-                    await bot.send_photo(
-                        channel_id,
-                        photo=no_poster,
-                        caption=caption_message,
-                        reply_markup=reply_markup
-                    )
+                await bot.send_photo(
+                    channel_id,
+                    photo=poster_url,
+                    caption=caption_message,
+                    reply_markup=reply_markup
+                )
             except Exception as e:
                 print(f"Failed to send update to channel {channel_id}. Error: {e}")
                 await bot.send_message(LOG_CHANNEL, f"Failed to send update to channel {channel_id}. Error: {e}")
     except Exception as e:
         print(f"Failed to send movie update. Error: {e}")
         await bot.send_message(LOG_CHANNEL, f"Failed to send movie update. Error: {e}")
-    
+        
