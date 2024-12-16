@@ -98,7 +98,7 @@ async def send_movie_updates(bot, file_name, caption, file_id):
 
         # Get poster URL
         poster_url = await get_imdb(movie_name)
-        caption_message = f"<b>Movie :- <code>{movie_name}</code>\n\nYear :- {year if year else 'Not Available'}\n\nLanguage :- {language}\n\nQuality :- {quality.replace(', ', ' ')}\n\n📤 Uploading By :- <a href=https://t.me/Movies_Dayz>Movies Dayz</a>\n⚡ Powered By :- <a href=https://t.me/Star_Moviess_Tamil>Star Movies Tamil</a></b>"
+        caption_message = f"<b>Movie :- <code>{movie_name}</code>\n\nYear :- {year if year else 'Not Available'}\n\nLanguage :- {language}\n\nQuality :- {quality.replace(', ', ' ')}\n\n📤 Uploading By :- <a href=https://t.me/Movies_Dayz>Movies Dayz</a>\n\n⚡ Powered By :- <a href=https://t.me/Star_Moviess_Tamil>Star Movies Tamil</a></b>"
         # Prepare buttons
         search_movie = movie_name.replace(" ", '-')
         if year:
