@@ -98,12 +98,12 @@ async def send_movie_updates(bot, file_name, caption, file_id):
         if movie_name in processed_movies:
             return
         processed_movies.add(movie_name)
-        movie = await movie_name_format(file_name)
-        if year:
-            movie = movie.replace(f" {year}", "")
-        poster_url = await get_imdb(movie)
-        caption_message = f"<b>Movie :- <code>{movie}</code>\n\nYear :- {year if year else 'Not Available'}\n\nLanguage :- {language}\n\nQuality :- {quality.replace(', ', ' ')}\n\n📤 Uploading By :- <a href=https://t.me/Movies_Dayz>Movies Dayz</a>\n\n⚡ Powered By :- <a href=https://t.me/Star_Moviess_Tamil>Star Movies Tamil</a></b>"
-        search_movie = movie.replace(" ", '-')
+        #movie = await movie_name_format(file_name)
+        #if year:
+            #movie = movie.replace(f" {year}", "")
+        poster_url = await get_imdb(movie_name)
+        caption_message = f"<b>Movie :- <code>{movie_name}</code>\n\nYear :- {year if year else 'Not Available'}\n\nLanguage :- {language}\n\nQuality :- {quality.replace(', ', ' ')}\n\n📤 Uploading By :- <a href=https://t.me/Movies_Dayz>Movies Dayz</a>\n\n⚡ Powered By :- <a href=https://t.me/Star_Moviess_Tamil>Star Movies Tamil</a></b>"
+        search_movie = movie_name.replace(" ", '-')
         if year:
             search_movie = search_movie.replace(f"-{year}", "")
 
