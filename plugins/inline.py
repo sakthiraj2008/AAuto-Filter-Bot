@@ -28,7 +28,7 @@ async def inline_search(bot, query):
             results=[],
             cache_time=0,
             switch_pm_text="This is a Premium Feature. Buy Premium to Access.",
-            switch_pm_parameter="https://t.me/Star_Moviess_Bot?start=plans")
+            switch_pm_parameter="plan")
         return
 
     results = []
