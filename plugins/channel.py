@@ -29,14 +29,8 @@ async def get_imdb(file_name):
     return "https://telegra.ph/file/88d845b4f8a024a71465d.jpg"  # Default poster
 
 async def movie_name_format(file_name):
-    # Clean and format the movie name
-    filename = re.sub(r'http\S+', '', re.sub(r'@\w+|#\w+', '', file_name)
-                      .replace('_', ' ').replace('[', '').replace(']', '')
-                      .replace('(', '').replace(')', '').replace('{', '')
-                      .replace('}', '').replace('.', ' ').replace('@', '')
-                      .replace(':', '').replace(';', '').replace("'", '')
-                      .replace('-', '').replace('!', '')).strip()
-    return filename
+  filename = re.sub(r'http\S+', '', re.sub(r'@\w+|#\w+', '', file_name).replace('_', ' ').replace('[', '').replace(']', '').replace('(', '').replace(')', '').replace('{', '').replace('}', '').replace('.', ' ').replace('@', '').replace(':', '').replace(';', '').replace("'", '').replace('-', '').replace('!', '')).strip()
+  return filename
 
 async def check_qualities(text, qualities):
     quality = [q for q in qualities if q.lower() in text.lower()]
@@ -55,12 +49,18 @@ async def send_movie_updates(bot, file_name, caption, file_id):
     try:
         channels = await db.get_movie_update_channels() or MOVIE_UPDATE_CHANNEL
 
-        # Extract year and season
         year_match = re.search(r"\b(19|20)\d{2}\b", caption)
-        year = year_match.group(0) if year_match else "Not Available"
-        season_match = re.search(r"(?i)(?:s|season)0*(\d{1,2})", caption)
-        season = season_match.group(1) if season_match else None
-
+        year = year_match.group(0) if year_match else None      
+        pattern = r"(?i)(?:s|season)0*(\d{1,2})"
+        season = re.search(pattern, caption)
+        if not season:
+            season = re.search(pattern, file_name) 
+        if year:
+            file_name = file_name[:file_name.find(year) + 4]      
+        if not year:
+            if season:
+                season = season.group(1) if season else None       
+                file_name = file_name[:file_name.find(season) + 1]
         # Set movie quality
         qualities = ["HDCAM", "HDRip", "SDTV", "HDTV", "BluRay", "HD DVD", "WEB-DL", "CAMRip", "PreDVD", 
                      "DVDscr", "WEB-HD", "BDRip", "DVDRip", "HDTS"]
@@ -88,20 +88,19 @@ async def send_movie_updates(bot, file_name, caption, file_id):
         language = await check_languages(caption, language_map) or "Not Available"
 
         # Format movie name
-        movie_name = await movie_name_format(file_name)
+        movie_name = await movie_name_format(file_name)    
         if movie_name in processed_movies:
-            return
-        processed_movies.add(movie_name)
-
+            return 
+        processed_movies.add(movie_name)    
         # Remove year from movie name
-        if year != "Not Available":
+        search_movie = movie_name.replace(" ", '-')
+        if year:
             movie_name = movie_name.replace(f" {year}", "")
 
         # Get poster URL
         poster_url = await get_imdb(movie_name)
         caption_message = f"<b>Movie :- <code>{movie_name}</code>\n\nYear :- {year if year else 'Not Available'}\n\nLanguage :- {language}\n\nQuality :- {quality.replace(', ', ' ')}\n\n📤 Uploading By :- <a href=https://t.me/Movies_Dayz>Movies Dayz</a>\n⚡ Powered By :- <a href=https://t.me/Star_Moviess_Tamil>Star Movies Tamil</a></b>"
         # Prepare buttons
-        search_movie = movie_name.replace(" ", '-')
         if year:
             search_movie = search_movie.replace(f"-{year}", "")  # Remove the year part from the search string
         btn = [
