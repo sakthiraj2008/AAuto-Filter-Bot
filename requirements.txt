@@ -12,3 +12,4 @@ aiofiles
 telegraph
 speedtest-cli
 uvloop
+flask
