@@ -22,7 +22,23 @@ from database.users_chats_db import db
 from database.ia_filterdb import Media
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
+from flask import Flask, render_template
+from threading import Thread
 
+# Flask keep_alive function
+app = Flask(__name__)
+
+@app.route('/')
+def index():
+    return "Alive"
+
+def run():
+    app.run(host='0.0.0.0', port=8080)
+
+def keep_alive():  
+    t = Thread(target=run)
+    t.start()
+    
 uvloop.install()
 
 class Bot(Client):
@@ -66,9 +82,9 @@ class Bot(Client):
         #groups = await db.get_all_chats_count()
         #for grp in groups:
             #await save_group_settings(grp['id'], 'fsub', "")
-        app = web.AppRunner(web_app)
-        await app.setup()
-        await web.TCPSite(app, "0.0.0.0", PORT).start()
+        #app = web.AppRunner(web_app)
+        #await app.setup()
+        #await web.TCPSite(app, "0.0.0.0", PORT).start()
         try:
             await self.send_message(chat_id=LOG_CHANNEL, text=f"<b>{me.mention} Restarted! 🤖</b>")
         except:
