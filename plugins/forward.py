@@ -13,7 +13,7 @@ from database.users_chats_db import db
 # Setting up logging
 logger = logging.getLogger(__name__)
 user_client = TelegramClient(StringSession(USER_STRING_SESSION), API_ID, API_HASH)
-user_client.start()
+await user_client.start()
 
 @user_client.on(events.NewMessage(chats=SOURCE_CHANNELS1))  # Listen to the source_channel (list of channels)
 async def forward_message(event, command_type=1):
