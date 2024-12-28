@@ -14,7 +14,7 @@ from database.users_chats_db import db
 logger = logging.getLogger(__name__)
 try:
     user_client = TelegramClient(StringSession(USER_STRING_SESSION), API_ID, API_HASH)
-    user_client.start()
+    await user_client.start()
 except Exception as e:
     logger.error(f"Error initializing the bot: {str(e)}")
     logger.error("Bot is quitting...")
@@ -545,3 +545,7 @@ async def replace_links_in_caption(caption, web_link, my_link, my_username, orig
     caption = caption.replace(original_text, replace_text)
     return caption
   
+if __name__ == "__main__":
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(user_client.start())
+    
