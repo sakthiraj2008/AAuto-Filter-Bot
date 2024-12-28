@@ -5,8 +5,8 @@ import requests
 import feedparser
 from bs4 import BeautifulSoup as bs
 from pyrogram import Client
-from MrTamilKiD.tools.db import u_db
-from info import Config
+from database.users_chats_db import db
+from info import TAMILMV_LOG, TAMILBLAST_LOG, TAMILROCKERS_LOG
 
 async def tamilmv_rss_feed(bot: Client):
     # Get the TamilMV domain from the database
@@ -60,7 +60,7 @@ async def tamilmv_rss_feed(bot: Client):
         for p in range(0, len(mag)):
             try:
                 if not await u_db.is_tamilmv_exist(all_titles[p], file_link[p], mag[p]):
-                    await bot.send_message(chat_id=Config.TAMILMV_LOG,
+                    await bot.send_message(chat_id=TAMILMV_LOG,
                         text=f"<b>/qbleech {file_link[p]}\n\n{all_titles[p]}</b>\n<b>📥 Updated By <a href='https://t.me/DP_BOTZ'>1TamilMV</a></b>", disable_web_page_preview=True)
                     print(f"added working...")
                     await u_db.add_tamilmv(all_titles[p], file_link[p], mag[p])
@@ -110,7 +110,7 @@ async def tamilblasters_rss_feed(bot: Client):
         for p in range(0, len(mag)):
             try:
                 if not await u_db.is_tb_exist(all_titles[p], file_link[p], mag[p]):
-                    await bot.send_message(chat_id=Config.TAMILBLAST_LOG,
+                    await bot.send_message(chat_id=TAMILBLAST_LOG,
                          text=f"<b>/qbleech2 {file_link[p]}\n\n{all_titles[p]}</b>\n<b>📥 Updated By <a href='https://t.me/DP_BOTZ'>1TamilBlasters</a></b>", disable_web_page_preview=True)
                     print(f"added working...")
                     await u_db.add_tb(all_titles[p], file_link[p], mag[p])
@@ -162,7 +162,7 @@ async def tamilrockers_rss_feed(bot: Client):
         for p in range(0, len(mag)):
             try:
                 if not await u_db.is_tr_exist(all_titles[p], file_link[p], mag[p]):
-                    await bot.send_message(chat_id=Config.TAMILROCKERS_LOG,
+                    await bot.send_message(chat_id=TAMILROCKERS_LOG,
                          text=f"<b>/qbleech {file_link[p]}\n\n{all_titles[p]}</b>\n<b>📥 Updated By <a href='https://t.me/DP_BOTZ'>2TamilRockers</a></b>", disable_web_page_preview=True)
                     print(f"added working...")
                     await u_db.add_tr(all_titles[p], file_link[p], mag[p])
