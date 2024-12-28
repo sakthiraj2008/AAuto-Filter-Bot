@@ -1,9 +1,6 @@
 import logging
 import re
 import asyncio
-import aiohttp
-import traceback
-import pymongo
 from datetime import datetime
 from telethon import TelegramClient, events, Button, sync
 from telethon.sessions import StringSession
