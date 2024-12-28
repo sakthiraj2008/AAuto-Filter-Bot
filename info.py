@@ -32,6 +32,8 @@ if len(BOT_TOKEN) == 0:
     print('Error - BOT_TOKEN is missing, exiting now')
     exit()
 PORT = int(environ.get('PORT', '80'))
+USER_SESSION = environ.get('USER_SESSION', 'User-Bot')
+USER_STRING_SESSION = environ.get('USER_STRING_SESSION', 'BQC2tFkAkYZ0vGtInJ-rss-wOyNAoPYUF1W0G_nZyrjJnG6CGFR645YKCIU2qRAVKWjomO8Gc4VOxIJYMZLBM9z0xoqeZ02w7T4lPWHHbOzstdycyhnSC2Q4iM7QzNuoXOCcN1wGVpLjknPinznoJ7KuAzsprVaMnKpVKdAHkQcxhT9Smtg0T0BCQM41QbLuZCMKOdrRZLodflAXpcm029Fu-N90nhVjlaZCpNrdxQlCBi3deUT0joWn7tTGnHCc_qsFA3QZBqbqCzZgHZbK-xLNv2mzCZtB0M7-Vo-yfrXOXVdUnOKZDgLm0hBY2AN5ESHTJaxPx86FpwuHqnMJgfd8RPTuUAAAAABS8Xg8AA')
 
 # Bot pics
 PICS = (environ.get('PICS', 'https://envs.sh/4kP.jpg')).split()
@@ -58,7 +60,15 @@ MOVIE_UPDATE_CHANNEL = [int(movie_update_channel) if movie_update_channel.starts
 FORCE_SUB = [int(force_sub) if force_sub.startswith("-") else force_sub for force_sub in environ.get('FORCE_SUB', '-1002008853384 -1001589399161').split()]
 if len(FORCE_SUB) == 0:
     print('Info - FORCE_SUB is empty')
-    
+# For Forwarding 
+SOURCE_CHANNELS1 = int(environ.get('SOURCE_CHANNELS1', '-1001822541447')) # 1TamilBlasters
+SOURCE_CHANNELS2 = int(environ.get('SOURCE_CHANNELS2', '-1001864825324')) # 1TamilMV
+SOURCE_CHANNELS3 = int(environ.get('SOURCE_CHANNELS3', '-1001822541447')) # 1TamilBlasters
+SOURCE_CHANNELS4 = int(environ.get('SOURCE_CHANNELS4', '-1001864825324')) # 1TamilMV
+SOURCE_CHANNELS5 = int(environ.get('SOURCE_CHANNELS5', '-1001822541447')) # 1TamilBlasters
+SOURCE_CHANNELS6 = int(environ.get('SOURCE_CHANNELS6', '-1001864825324')) # 1TamilMV
+SOURCE_CHANNELS7 = int(environ.get('SOURCE_CHANNELS7', '2082930520'))
+
 # support group
 SUPPORT_GROUP = environ.get('SUPPORT_GROUP', '-1001895961046')
 if len(SUPPORT_GROUP) == 0:
@@ -124,7 +134,7 @@ if len(BIN_CHANNEL) == 0:
     exit()
 else:
     BIN_CHANNEL = int(BIN_CHANNEL)
-URL = environ.get("URL", "https://google-translater-bot.onrender.com/")
+URL = environ.get("URL", "https://dpbotz-player.koyeb.app/")
 if len(URL) == 0:
     print('Error - URL is missing, exiting now')
     exit()
