@@ -1,5 +1,3 @@
-#Copyright 2024-present, Author: MrTamilKiD
-
 import re
 import time
 import asyncio
@@ -8,7 +6,7 @@ import feedparser
 from bs4 import BeautifulSoup as bs
 from pyrogram import Client
 from MrTamilKiD.tools.db import u_db
-from config import Config
+from info import Config
 
 async def tamilmv_rss_feed(bot: Client):
     # Get the TamilMV domain from the database
