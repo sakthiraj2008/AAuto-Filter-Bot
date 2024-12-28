@@ -125,6 +125,15 @@ SHORTLINK = is_enabled('SHORTLINK', False)
 PAYMENT_QR = environ.get('PAYMENT_QR', 'https://envs.sh/4UC.jpg')
 OWNER_UPI_ID = environ.get('OWNER_UPI_ID', 'starbotstamil@oksbi')
 
+# RSS Feed URL
+TAMILMV = os.environ.get("TMV", "https://www.1tamilmv.uno/")
+TAMILBLAST = os.environ.get("TB", "https://www.1tamilblasters.party/")
+TAMILROCKERS = os.environ.get("TR", "https://www.2tamilrockers.com/")
+# log channel list
+TAMILMV_LOG = int(os.environ.get("TMV_LOG", -1001864825324))
+TAMILBLAST_LOG = int(os.environ.get("TB_LOG", -1001822541447))
+TAMILROCKERS_LOG = int(os.environ.get("TR_LOG", -1002056074553))
+
 # for stream
 IS_STREAM = is_enabled('IS_STREAM', True)
 BIN_CHANNEL = environ.get("BIN_CHANNEL", "-1002386293179")
