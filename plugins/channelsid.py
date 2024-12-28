@@ -48,14 +48,10 @@ async def set_channel_command(client: Client, message: Message):
     if not ADMINS:
         await message.reply("You do not have permission to use this command.")
         return
-
     args = message.text.split()
-
-    # Ensure the correct number of arguments
     if len(args) < 8:
         await message.reply("Usage: /set_channel <command_type> <destination_channel_ids> <original:replace> <my_link> <web_link> <my_username> <title>")
         return
-
     command_type = int(args[1])  # Command type (1, 2, 3, or 4)
     destination_channel_ids = args[2].split(',')  # Destination channel IDs are expected as comma-separated values
     original_text, replace_text = args[3].split(':')  # Text replacement pattern
@@ -63,8 +59,6 @@ async def set_channel_command(client: Client, message: Message):
     web_link = None if args[5] == "None" else args[5]
     my_username = None if args[6] == "None" else args[6]
     title = ' '.join(args[7:])
-
-    # Prepare data for the database
     data = {
         "command_type": command_type,
         "destination_channel_ids": destination_channel_ids,
@@ -75,40 +69,21 @@ async def set_channel_command(client: Client, message: Message):
         "my_username": my_username,
         "title": title
     }
-
-    # Insert or update the document in the database
-    collection = init_db()
-    collection.update_one(
-        {"command_type": command_type},
-        {"$set": data},
-        upsert=True
-    )
-
+    data = await db.set_channel()
     await message.reply(f"Channel settings have been updated for Command Type {command_type} with title '{title}'")
 
-# /get_channel Command
-@StarBotsTamil.on_message(filters.command("get_channel"))
+@Client.on_message(filters.command("get_channel"))
 async def get_channel_command(client: Client, message: Message):
     user_id = message.from_user.id
-
-    # Check if the user is an admin
-    if user_id != admin_user_id:
+    if not ADMINS:
         await message.reply("You do not have permission to use this command.")
         return
-
     args = message.text.split()
-
-    # Ensure the correct number of arguments
     if len(args) < 2:
         await message.reply("Usage: /get_channel <command_type>")
         return
-
     command_type = int(args[1])  # Get command_type (1, 2, 3, or 4)
-
-    # Fetch settings from the database
-    collection = init_db()
-    channel_data = collection.find_one({"command_type": command_type})
-
+    channel_data = await db.get_channel()
     if channel_data:
         response = f"Command Type {command_type} settings:\n"
         response += f"Destination Channel IDs: {', '.join(channel_data['destination_channel_ids'])}\n"
@@ -122,4 +97,3 @@ async def get_channel_command(client: Client, message: Message):
         response = f"No settings found for Command Type {command_type}."
 
     await message.reply(response)
-
