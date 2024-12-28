@@ -13,3 +13,4 @@ telegraph
 speedtest-cli
 uvloop
 flask
+telethon
