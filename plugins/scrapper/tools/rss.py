@@ -1,5 +1,3 @@
-#Copyright 2024-present, Author: MrTamilKiD
-
 import re
 import time
 import asyncio
