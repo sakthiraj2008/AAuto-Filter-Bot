@@ -15,3 +15,11 @@ uvloop
 flask
 telethon
 aiogram
+bs4
+feedparser
+lxml
+motor
+psutil
+python-dotenv
+requests
+flask
