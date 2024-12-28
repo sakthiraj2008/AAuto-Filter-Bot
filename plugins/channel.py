@@ -85,7 +85,7 @@ async def send_movie_updates(bot, file_name, caption, file_id):
             "Dual": ["Dual"],
             "Multi": ["Multi"]
         }
-        language = await check_languages(caption, language_map) or "Not Available"
+        language = await check_languages(caption, language_map) or "Tamil"
 
         # Format movie name
         movie_name = await movie_name_format(file_name)    
