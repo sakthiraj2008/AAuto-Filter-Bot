@@ -40,15 +40,6 @@ class Bot(Client):
         temp.BANNED_CHATS = b_chats
         client = MongoClient(DATABASE_URL, server_api=ServerApi('1'))
         
-        for chat in TAMILMV_LOG, TAMILBLAST_LOG:
-            await self.send_message(chat, "Bot Started!")
-        
-        while True:
-            print("TamilMV Scraper Running...")
-            await tamilmv_rss_feed(self)
-            
-            print("TamilBlasters RSS Feed Running...")
-            await tamilblasters_rss_feed(self)        
         try:
             client.admin.command('ping')
             print("Pinged your deployment. You successfully connected to MongoDB!")
@@ -96,7 +87,16 @@ class Bot(Client):
         
         for admin in ADMINS:
             await self.send_message(chat_id=admin, text="<b>✅ ʙᴏᴛ ʀᴇsᴛᴀʀᴛᴇᴅ</b>")
-
+        for chat in TAMILMV_LOG, TAMILBLAST_LOG:
+            await self.send_message(chat, "Bot Started!")
+        
+        while True:
+            print("TamilMV Scraper Running...")
+            await tamilmv_rss_feed(self)
+            
+            print("TamilBlasters RSS Feed Running...")
+            await tamilblasters_rss_feed(self)        
+            
     async def stop(self, *args):
         await super().stop()
         print("Bot Stopped! Bye...")
