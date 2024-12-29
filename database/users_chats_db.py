@@ -347,7 +347,7 @@ class Database:
         return True if user else False
 
     # Domain Management Functions
-    async def add_or_update_domain(self, key, url):
+    async def update_domain(self, key, url):
         """
         Add a new domain or update an existing one with the provided key and URL.
         """
