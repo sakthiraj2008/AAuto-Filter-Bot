@@ -5,7 +5,7 @@ import requests
 import feedparser
 from bs4 import BeautifulSoup as bs
 from pyrogram import Client
-from database.users_chats_db import db
+from database.users_chats_db import db as u_db
 from info import TAMILMV_LOG, TAMILBLAST_LOG, TAMILROCKERS_LOG
 
 async def tamilmv_rss_feed(bot: Client):
