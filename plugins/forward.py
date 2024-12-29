@@ -12,7 +12,7 @@ from database.users_chats_db import db
 
 logger = logging.getLogger(__name__)
 
-async def start_bot():
+async def start_user():
     try:
         user_client = TelegramClient(StringSession(USER_STRING_SESSION), API_ID, API_HASH)
         await user_client.start()
@@ -389,4 +389,4 @@ async def replace_links_in_caption(caption, web_link, my_link, my_username, orig
   
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(start_bot())    
+    loop.run_until_complete(start_user())    
