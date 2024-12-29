@@ -4,7 +4,7 @@ import asyncio
 import requests
 from bs4 import BeautifulSoup
 from pyrogram import Client
-from database.users_chats_db import db
+from database.users_chats_db import db as u_db
 from info import TAMILMV_LOG, TAMILBLAST_LOG, TAMILROCKERS_LOG
 
 # TamilMV RSS Feed Scraper Function
