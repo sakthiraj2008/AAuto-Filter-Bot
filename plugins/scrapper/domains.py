@@ -1,6 +1,6 @@
 from pyrogram import Client, filters, enums
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
-from MrTamilKiD.tools.db import u_db
+from database.users_chats_db import db as u_db
 from info import ADMINS
 
 @Client.on_message(filters.command("links") & filters.private)
