@@ -41,11 +41,11 @@ class Database:
         self.botcol = mydb["bot_id"]
         self.movies_update_channel = mydb.movies_update_channel
         self.channel_col = mydb.channel_data
-        self.users = self.db.UsersData
-        self.black = self.db.TamilMV_List
-        self.tb = self.db.TamilBlaster_List
-        self.tr = self.db.TamilRockers_List
-        self.domains = self.db.Domains
+        self.users = mydb.UsersData
+        self.black = mydb.TamilMV_List
+        self.tb = mydb.TamilBlaster_List
+        self.tr = mydb.TamilRockers_List
+        self.domains = mydb.Domains
     
     def new_user(self, id, name):
         return dict(
