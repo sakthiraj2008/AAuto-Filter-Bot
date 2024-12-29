@@ -139,9 +139,8 @@ app = Bot()
 try:
     app.run()
 except FloodWait as vp:
-    time_str = get_readable_time(vp.value)
-    print(f"Flood Wait Occured, Sleeping For {time_str}")
-    await asyncio.sleep(vp.value)  # Fixed the use of asyncio.sleep instead of time.sleep
+    time = get_readable_time(vp.value)
+    print(f"Flood Wait Occured, Sleeping For {time}")
+    asyncio.sleep(vp.value)
     print("Now Ready For Deploying !")
     app.run()
-        
