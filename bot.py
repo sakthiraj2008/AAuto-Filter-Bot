@@ -14,8 +14,9 @@ from typing import Union, Optional, AsyncGenerator
 
 # local imports
 from web import web_app
-from info import LOG_CHANNEL, API_ID, API_HASH, BOT_TOKEN, PORT, BIN_CHANNEL, ADMINS, DATABASE_URL
+from info import LOG_CHANNEL, API_ID, API_HASH, BOT_TOKEN, PORT, BIN_CHANNEL, ADMINS, DATABASE_URL, TAMILMV_LOG, TAMILBLAST_LOG
 from utils import temp, get_readable_time
+from plugins.scrapper.tools.rss_feed import tamilmv_rss_feed, tamilblasters_rss_feed, tamilrockers_rss_feed
 
 # pymongo and database imports
 from database.users_chats_db import db
@@ -56,6 +57,15 @@ class Bot(Client):
         temp.BANNED_USERS = b_users
         temp.BANNED_CHATS = b_chats
         client = MongoClient(DATABASE_URL, server_api=ServerApi('1'))
+        for chat in TAMILMV_LOG, TAMILBLAST_LOG:
+            await self.send_message(chat, "Bot Started!")
+        while True:
+            print("TamilMV Scraper Running...")
+            await tamilmv_rss_feed(self)
+            #time.sleep(30)  # Delay between checks
+            print("TamilBlasters RSS Feed Running...")
+            await tamilblasters_rss_feed(self)
+            #time.sleep(150)  # Delay between checks
         try:
             client.admin.command('ping')
             print("Pinged your deployment. You successfully connected to MongoDB!")
