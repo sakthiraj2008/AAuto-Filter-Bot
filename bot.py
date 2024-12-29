@@ -23,24 +23,6 @@ from database.users_chats_db import db
 from database.ia_filterdb import Media
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
-from flask import Flask, render_template
-from threading import Thread
-
-# Flask keep_alive function
-app = Flask(__name__)
-
-@app.route('/')
-def index():
-    return "Alive"
-
-def run():
-    app.run(host='0.0.0.0', port=8080)
-
-def keep_alive():  
-    t = Thread(target=run)
-    t.start()
-    
-uvloop.install()
 
 class Bot(Client):
     def __init__(self):
@@ -57,22 +39,25 @@ class Bot(Client):
         temp.BANNED_USERS = b_users
         temp.BANNED_CHATS = b_chats
         client = MongoClient(DATABASE_URL, server_api=ServerApi('1'))
+        
         for chat in TAMILMV_LOG, TAMILBLAST_LOG:
             await self.send_message(chat, "Bot Started!")
+        
         while True:
             print("TamilMV Scraper Running...")
             await tamilmv_rss_feed(self)
-            #time.sleep(30)  # Delay between checks
+            
             print("TamilBlasters RSS Feed Running...")
-            await tamilblasters_rss_feed(self)
-            #time.sleep(150)  # Delay between checks
+            await tamilblasters_rss_feed(self)        
         try:
             client.admin.command('ping')
             print("Pinged your deployment. You successfully connected to MongoDB!")
         except Exception as e:
             print("Something Went Wrong While Connecting To Database!", e)
             exit()
+
         await super().start()
+
         if os.path.exists('restart.txt'):
             with open("restart.txt") as file:
                 chat_id, msg_id = map(int, file)
@@ -81,6 +66,7 @@ class Bot(Client):
             except:
                 pass
             os.remove('restart.txt')
+        
         temp.BOT = self
         await Media.ensure_indexes()
         me = await self.get_me()
@@ -92,20 +78,22 @@ class Bot(Client):
         #groups = await db.get_all_chats_count()
         #for grp in groups:
             #await save_group_settings(grp['id'], 'fsub', "")
-        #app = web.AppRunner(web_app)
-        #await app.setup()
-        #await web.TCPSite(app, "0.0.0.0", PORT).start()
+        app = web.AppRunner(web_app)
+        await app.setup()
+        await web.TCPSite(app, "0.0.0.0", PORT).start()
         try:
             await self.send_message(chat_id=LOG_CHANNEL, text=f"<b>{me.mention} Restarted! 🤖</b>")
         except:
             print("Error - Make sure bot admin in LOG_CHANNEL, exiting now")
             exit()
+        
         try:
             m = await self.send_message(chat_id=BIN_CHANNEL, text="Test")
             await m.delete()
         except:
             print("Error - Make sure bot admin in BIN_CHANNEL, exiting now")
             exit()
+        
         for admin in ADMINS:
             await self.send_message(chat_id=admin, text="<b>✅ ʙᴏᴛ ʀᴇsᴛᴀʀᴛᴇᴅ</b>")
 
@@ -142,7 +130,7 @@ class Bot(Client):
             new_diff = min(200, limit - current)
             if new_diff <= 0:
                 return
-            messages = await self.get_messages(chat_id, list(range(current, current+new_diff+1)))
+            messages = await self.get_messages(chat_id, list(range(current, current + new_diff + 1)))
             for message in messages:
                 yield message
                 current += 1
@@ -151,9 +139,9 @@ app = Bot()
 try:
     app.run()
 except FloodWait as vp:
-    time = get_readable_time(vp.value)
-    print(f"Flood Wait Occured, Sleeping For {time}")
-    asyncio.sleep(vp.value)
+    time_str = get_readable_time(vp.value)
+    print(f"Flood Wait Occured, Sleeping For {time_str}")
+    await asyncio.sleep(vp.value)  # Fixed the use of asyncio.sleep instead of time.sleep
     print("Now Ready For Deploying !")
     app.run()
-
+        
