@@ -64,7 +64,7 @@ async def tamilmv_rss_feed(bot: Client):
                         text=f"<b>/qbleech {file_link[p]}\n\n{all_titles[p]}</b>\n<b>📥 Updated By <a href='https://t.me/DP_BOTZ'>1TamilMV</a></b>", disable_web_page_preview=True)
                     print(f"added working...")
                     await u_db.add_tamilmv(all_titles[p], file_link[p], mag[p])
-                    await asyncio.sleep(3)
+                    await asyncio.sleep(300)
             except Exception as e:
                 print(e)
                 pass
@@ -114,7 +114,7 @@ async def tamilblasters_rss_feed(bot: Client):
                          text=f"<b>/qbleech2 {file_link[p]}\n\n{all_titles[p]}</b>\n<b>📥 Updated By <a href='https://t.me/DP_BOTZ'>1TamilBlasters</a></b>", disable_web_page_preview=True)
                     print(f"added working...")
                     await u_db.add_tb(all_titles[p], file_link[p], mag[p])
-                    await asyncio.sleep(3)
+                    await asyncio.sleep(300)
             except Exception as e:
                 print(e)
                 pass
@@ -166,7 +166,7 @@ async def tamilrockers_rss_feed(bot: Client):
                          text=f"<b>/qbleech {file_link[p]}\n\n{all_titles[p]}</b>\n<b>📥 Updated By <a href='https://t.me/DP_BOTZ'>2TamilRockers</a></b>", disable_web_page_preview=True)
                     print(f"added working...")
                     await u_db.add_tr(all_titles[p], file_link[p], mag[p])
-                    await asyncio.sleep(3)
+                    await asyncio.sleep(300)
             except Exception as e:
                 print(e)
                 pass
