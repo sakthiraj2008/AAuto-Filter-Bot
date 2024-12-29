@@ -1,7 +1,7 @@
 from pyrogram import Client, filters, enums
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from MrTamilKiD.tools.db import u_db
-from info import Config
+from info import ADMINS
 
 @Client.on_message(filters.command("links") & filters.private)
 async def links(c: Client, m: Message):
@@ -23,7 +23,7 @@ async def links(c: Client, m: Message):
     )
     
 # Add multiple domains
-@Client.on_message(filters.command("set_domains") & filters.user(Config.OWNER_ID))
+@Client.on_message(filters.command("set_domains") & filters.user(ADMINS))
 async def add_domains(client: Client, message: Message):
     """
     Adds multiple domains and associates each with its website.
@@ -65,7 +65,7 @@ async def add_domains(client: Client, message: Message):
             disable_web_page_preview=True
         )
 
-@Client.on_message(filters.command("get_domains") & filters.user(Config.OWNER_ID))
+@Client.on_message(filters.command("get_domains") & filters.user(ADMINS))
 async def get_domains(client: Client, message: Message):
     """
     Fetches and displays all available domains from the database.
