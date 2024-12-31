@@ -118,7 +118,4 @@ async def main():
     await bot.idle()  # This keeps the bot running until it's stopped
 
 if __name__ == "__main__":
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(main())
-    
-    
+    asyncio.run(main())  # Replacing the deprecated loop with asyncio.run()
