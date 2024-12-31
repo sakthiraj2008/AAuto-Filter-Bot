@@ -12,6 +12,10 @@ from pyrogram.errors import FloodWait
 from aiohttp import web
 from typing import Union, Optional, AsyncGenerator
 
+# telethon imports 
+from telethon import TelegramClient
+from telethon.sessions import StringSession
+
 # local imports
 from web import web_app
 from info import LOG_CHANNEL, API_ID, API_HASH, BOT_TOKEN, USER_STRING_SESSION, PORT, BIN_CHANNEL, ADMINS, DATABASE_URL, TAMILMV_LOG, TAMILBLAST_LOG
@@ -97,7 +101,7 @@ class Bot(Client):
             await tamilblasters_rss_feed(self)        
 
 async def main():
-    user_client = Client(StringSession(USER_STRING_SESSION), API_ID, API_HASH)
+    user_client = TelegramClient(StringSession(USER_STRING_SESSION), API_ID, API_HASH)
     await user_client.start()
 
     bot = Bot()
