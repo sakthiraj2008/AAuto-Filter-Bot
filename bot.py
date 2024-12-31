@@ -14,7 +14,7 @@ from typing import Union, Optional, AsyncGenerator
 
 # local imports
 from web import web_app
-from info import LOG_CHANNEL, API_ID, API_HASH, BOT_TOKEN, PORT, BIN_CHANNEL, ADMINS, DATABASE_URL, TAMILMV_LOG, TAMILBLAST_LOG
+from info import LOG_CHANNEL, API_ID, API_HASH, BOT_TOKEN, USER_STRING_SESSION, PORT, BIN_CHANNEL, ADMINS, DATABASE_URL, TAMILMV_LOG, TAMILBLAST_LOG
 from utils import temp, get_readable_time
 from plugins.scrapper.tools.rss_feed import tamilmv_rss_feed, tamilblasters_rss_feed, tamilrockers_rss_feed
 
@@ -94,9 +94,23 @@ class Bot(Client):
             print("TamilMV Scraper Running...")
             await tamilmv_rss_feed(self)
             
-            print("TamilBlasters RSS Feed Running...")
+            print("TamilBlasters Scraper Running...")
             await tamilblasters_rss_feed(self)        
-            
+
+async def main():
+    """Save old files in database with the help of user bot"""
+
+    user_client = TelegramClient(StringSession(USER_STRING_SESSION), API_ID, API_HASH)
+    await user_client.start()
+
+    finally:
+        await user_bot.stop()
+        await bot.stop()
+
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(main())
+    
     async def stop(self, *args):
         await super().stop()
         print("Bot Stopped! Bye...")
