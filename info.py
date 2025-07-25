@@ -17,17 +17,17 @@ def is_valid_ip(ip):
     return re.match(ip_pattern, ip) is not None
 
 # Bot information
-API_ID = environ.get('API_ID', '11973721')
+API_ID = environ.get('API_ID', '')
 if len(API_ID) == 0:
     print('Error - API_ID is missing, exiting now')
     exit()
 else:
     API_ID = int(API_ID)
-API_HASH = environ.get('API_HASH', '5264bf4663e9159565603522f58d3c18')
+API_HASH = environ.get('API_HASH', '')
 if len(API_HASH) == 0:
     print('Error - API_HASH is missing, exiting now')
     exit()
-BOT_TOKEN = environ.get('BOT_TOKEN', '7339692339:AAFAOyRX0EdURGDLkENqT4rIBt_rfQHWCtY')
+BOT_TOKEN = environ.get('BOT_TOKEN', '')
 if len(BOT_TOKEN) == 0:
     print('Error - BOT_TOKEN is missing, exiting now')
     exit()
@@ -38,7 +38,7 @@ USER_STRING_SESSION = environ.get('USER_STRING_SESSION', '1BVtsOKEBu7SQF8Ck5YduB
 PICS = (environ.get('PICS', 'https://envs.sh/4kP.jpg')).split()
 
 # Bot Admins
-ADMINS = environ.get('ADMINS', '1391556668')
+ADMINS = environ.get('ADMINS', '')
 if len(ADMINS) == 0:
     print('Error - ADMINS is missing, exiting now')
     exit()
@@ -55,8 +55,8 @@ if len(LOG_CHANNEL) == 0:
     exit()
 else:
     LOG_CHANNEL = int(LOG_CHANNEL)
-MOVIE_UPDATE_CHANNEL = [int(movie_update_channel) if movie_update_channel.startswith("-") else movie_update_channel for movie_update_channel in environ.get('MOVIE_UPDATE_CHANNEL', '-1002244141688 -1001715180239 -1001589399161 -1001139111796 -1002097728232').split()]
-FORCE_SUB = [int(force_sub) if force_sub.startswith("-") else force_sub for force_sub in environ.get('FORCE_SUB', '-1002008853384 -1001589399161').split()]
+MOVIE_UPDATE_CHANNEL = [int(movie_update_channel) if movie_update_channel.startswith("-") else movie_update_channel for movie_update_channel in environ.get('MOVIE_UPDATE_CHANNEL', '').split()]
+FORCE_SUB = [int(force_sub) if force_sub.startswith("-") else force_sub for force_sub in environ.get('FORCE_SUB', '').split()]
 if len(FORCE_SUB) == 0:
     print('Info - FORCE_SUB is empty')
 # For Forwarding 
@@ -69,7 +69,7 @@ SOURCE_CHANNELS6 = int(environ.get('SOURCE_CHANNELS6', '-1001864825324')) # 1Tam
 SOURCE_CHANNELS7 = int(environ.get('SOURCE_CHANNELS7', '2082930520'))
 
 # support group
-SUPPORT_GROUP = environ.get('SUPPORT_GROUP', '-1001895961046')
+SUPPORT_GROUP = environ.get('SUPPORT_GROUP', '')
 if len(SUPPORT_GROUP) == 0:
     print('Error - SUPPORT_GROUP is missing, exiting now')
     exit()
@@ -77,7 +77,7 @@ else:
     SUPPORT_GROUP = int(SUPPORT_GROUP)
 
 # MongoDB information
-DATABASE_URL = environ.get('DATABASE_URL', "mongodb+srv://KarthikMovies:KarthikUK007@cluster0.4l5byki.mongodb.net/?retryWrites=true&w=majority")
+DATABASE_URL = environ.get('DATABASE_URL', "")
 if len(DATABASE_URL) == 0:
     print('Error - DATABASE_URL is missing, exiting now')
     exit()
@@ -136,9 +136,9 @@ TAMILROCKERS_LOG = int(environ.get("TR_LOG", -1002056074553))
 
 # for stream
 IS_STREAM = is_enabled('IS_STREAM', True)
-BIN_CHANNEL = environ.get("BIN_CHANNEL", "-1002386293179")
+BIN_CHANNEL = environ.get("BIN_CHANNEL", "")
 if len(BIN_CHANNEL) == 0:
-    print('Error - BIN_CHANNEL is missing, exiting now')
+       BIN_CHANNEL is missing, exiting now')
     exit()
 else:
     BIN_CHANNEL = int(BIN_CHANNEL)
