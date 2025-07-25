@@ -135,7 +135,7 @@ TAMILBLAST_LOG = int(environ.get("TB_LOG", -1002318167392))
 TAMILROCKERS_LOG = int(environ.get("TR_LOG", -1002318167392))
 
 # for stream
-ISenabled('IS_STREAM', True)
+IS_STREAM = is_enabled('IS_STREAM', True)
 BIN_CHANNEL = environ.get("BIN_CHANNEL", "-1002262171720")
 if len(BIN_CHANNEL) == 0:
        print('BIN_CHANNEL is missing, exiting now')
